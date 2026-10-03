@@ -1,0 +1,921 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5cb58ab5-2ee7-4020-be98-0ac665e594d1",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1216,
+        336
+      ],
+      "id": "453fba81-ea94-4b97-81bf-1bcd3206074f",
+      "name": "Webhook",
+      "webhookId": "5cb58ab5-2ee7-4020-be98-0ac665e594d1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1sk0BlG31GVRfvCN",
+          "name": "Header Auth Bearer token n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "output": "raw",
+        "projection": "full"
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        112,
+        224
+      ],
+      "id": "7dc715ca-b8c8-4063-8ae2-156696e4025b",
+      "name": "get User details",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "433c59b4-0807-4596-9cff-8f87fcfce325",
+              "leftValue": "={{ $json.body.correo }}",
+              "rightValue": "=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -784,
+        336
+      ],
+      "id": "3c0d1801-360c-4489-b949-e9ed4868ec5c",
+      "name": "Body parameters pre-validation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "07c90d25-654c-4960-8c14-f4a91f564c4f",
+              "leftValue": "={{ $json.description }}",
+              "rightValue": "resource you are requesting could not be found",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        240
+      ],
+      "id": "2e486c20-f2e4-4cb7-b970-85300a247961",
+      "name": "If not found"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f5b6cbc-cccd-4b27-a925-e6f39d3f4d7d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        144
+      ],
+      "id": "524d8d26-00ea-4ed9-9c3e-e0decc59767b",
+      "name": "If get user details not contains error message"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rkrHk1gMjSJ6pTwu",
+          "mode": "list",
+          "cachedResultName": "Authorized domains",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/rkrHk1gMjSJ6pTwu"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "domain",
+              "keyValue": "={{ $json.body.correo.split('@')[1] }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        272
+      ],
+      "id": "c5e4b67d-109c-4e2a-8228-196e8066a8fc",
+      "name": "Get row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "429d04da-edd1-4772-a736-3e828a8ca68f",
+              "leftValue": "={{ Object.keys($input.all()[0].json).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -336,
+        272
+      ],
+      "id": "e4608822-1a6f-495b-b8a2-5a9e726d032f",
+      "name": "If valid domains"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        224
+      ],
+      "id": "9461e55a-fbe7-404f-939c-3d12c99aa32d",
+      "name": "Prevalidation OK, continue"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        336
+      ],
+      "id": "6aa3b3ac-72c6-4919-b99c-fb0ab5054f90",
+      "name": "Prevalidation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45bb937c-944d-4217-95fd-a12f6c40eedb",
+              "name": "error",
+              "value": "=Error on webhook body parameters. Expects: \"body\":  {\"correo\": \"user@domain.com\" (valid email and valid domains),\"only_user_info\": true/false (boolean, value must not be quoted and all lowercase)}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        432
+      ],
+      "id": "e40c05be-c5bf-4c3d-9f08-0e31a720d08b",
+      "name": "Prevalidation fails. Error message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9645dce-1ef6-4c9b-8b1e-fd434a2c9a2f",
+              "name": "not_found",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        416
+      ],
+      "id": "0949824d-feac-4d8a-80ad-6a16bad93166",
+      "name": "Not found field false and debug info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef955138-cc56-4bc5-84c2-4b350838cc5c",
+              "name": "not_found",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.mesage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        192
+      ],
+      "id": "5d117d70-625d-429d-acf1-68ac6dd8a425",
+      "name": "Not found field Return message-1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "updateFields": {
+          "primaryEmail": "={{ $('Webhook').item.json.body.correoNuevo }}"
+        }
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        16
+      ],
+      "id": "3fa44b81-10fa-4e07-83fe-dd2c462d7d76",
+      "name": "Cambiar email",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "updateFields": {
+          "firstName": "={{ $('Webhook').item.json.body.nombreNuevo }}"
+        }
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        -48
+      ],
+      "id": "ef1eedfd-9e19-4044-b28c-0d5483e27d6d",
+      "name": "Cambier Nombre",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "updateFields": {
+          "lastName": "={{ $('Webhook').item.json.body.ApellidoNuevo }}"
+        }
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        -112
+      ],
+      "id": "f674dd04-e1d9-4d1e-9985-13e618d2b010",
+      "name": "Cambier Apellido",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ca87942-cf59-4ff6-bb64-86d3febbe5cc",
+              "leftValue": "={{ $('Webhook').item.json.body.nombreNuevo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        16
+      ],
+      "id": "ba3dfa15-4c7c-40a2-a743-89f9ff7c74b2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "455f378a-62f7-4b1e-9ecf-9c984af3034d",
+              "leftValue": "={{ $('Webhook').item.json.body.ApellidoNuevo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        128
+      ],
+      "id": "f2016982-ffea-4412-bf95-3b7bba9c2a6f",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1db8efa9-9246-4faf-9911-f6b5a776e6fc",
+              "leftValue": "={{ $json.primaryEmail }}",
+              "rightValue": "={{ $('Webhook').item.json.body.correoNuevo }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2864,
+        16
+      ],
+      "id": "ec12e0a8-a1ac-4bb6-9ff8-5e52c0b053d9",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "errorType": "errorObject",
+        "errorObject": "Error, no se cambió la dirección de correo"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        3568,
+        192
+      ],
+      "id": "289d4ecf-10c5-440e-975f-31af3aea1b89",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $json.primaryEmail }}/aliases/{{ $('Webhook').item.json.body.correo }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3920,
+        -144
+      ],
+      "id": "9bcd0039-7b9b-4693-b83a-90dd750a9ef7",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3648,
+        -144
+      ],
+      "id": "6568b419-5758-4f38-8144-e676e604ad2b",
+      "name": "Wait",
+      "webhookId": "862041ef-afe9-4ccb-b486-1cab67c4a638"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3424,
+        -144
+      ],
+      "id": "f507c960-0f95-4e77-a64a-7117e5d2a963",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8ba824b-e928-4304-8472-bc1f06c08690",
+              "name": "message",
+              "value": "Cambio exitoso. La eliminación del alias y los nombres (si aplica) se verán reflejados en aproximadamente un minuto.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3152,
+        -80
+      ],
+      "id": "8323babe-b3ad-4268-bcde-3653f75ac375",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correoNuevo }}",
+          "mode": "userEmail"
+        },
+        "output": "raw",
+        "projection": "full"
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        4176,
+        -144
+      ],
+      "id": "2f143c17-5b53-4522-a3dd-8f346cd789b4",
+      "name": "Get a user",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get User details": {
+      "main": [
+        [
+          {
+            "node": "If get user details not contains error message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Body parameters pre-validation": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If not found": {
+      "main": [
+        [
+          {
+            "node": "Not found field Return message-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If get user details not contains error message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "If valid domains",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If valid domains": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation OK, continue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation OK, continue": {
+      "main": [
+        [
+          {
+            "node": "get User details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation": {
+      "main": [
+        [
+          {
+            "node": "Body parameters pre-validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cambiar email": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cambier Nombre": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cambier Apellido": {
+      "main": [
+        [
+          {
+            "node": "Cambiar email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Cambier Nombre",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Cambier Apellido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cambiar email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get a user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
