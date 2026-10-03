@@ -1,0 +1,539 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "workspace/user/suspend",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1792,
+        336
+      ],
+      "id": "97ebe658-66ea-4e63-8d87-9689e25ed17d",
+      "name": "Webhook",
+      "webhookId": "484b3d64-6f54-4e19-b9d0-3a5c7e6a1029",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1sk0BlG31GVRfvCN",
+          "name": "Header Auth Bearer token n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "output": "raw",
+        "projection": "full"
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        208
+      ],
+      "id": "73902d2b-7665-4f70-a607-6249331b6ead",
+      "name": "get User details",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "433c59b4-0807-4596-9cff-8f87fcfce325",
+              "leftValue": "={{ $json.body.correo }}",
+              "rightValue": "=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1344,
+        336
+      ],
+      "id": "c861c3d5-41ec-4598-ace0-5359d54b3e88",
+      "name": "Body parameters pre-validation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "07c90d25-654c-4960-8c14-f4a91f564c4f",
+              "leftValue": "={{ $json.description }}",
+              "rightValue": "resource you are requesting could not be found",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        336
+      ],
+      "id": "b53ec93c-e42d-4cbe-8ae7-9e9512de620b",
+      "name": "If not found"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f5b6cbc-cccd-4b27-a925-e6f39d3f4d7d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        144
+      ],
+      "id": "d69f60f9-3e05-4422-93e5-68d055c03a15",
+      "name": "If get user details not contains error message"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rkrHk1gMjSJ6pTwu",
+          "mode": "list",
+          "cachedResultName": "Authorized domains",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/rkrHk1gMjSJ6pTwu"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "domain",
+              "keyValue": "={{ $json.body.correo.split('@')[1] }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        256
+      ],
+      "id": "1e5167a2-3a13-4d12-aba0-012255da46f0",
+      "name": "Get row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "429d04da-edd1-4772-a736-3e828a8ca68f",
+              "leftValue": "={{ Object.keys($input.all()[0].json).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        256
+      ],
+      "id": "1a2e11da-47ea-4920-aa3a-bcb8971dd643",
+      "name": "If valid domains"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        208
+      ],
+      "id": "29277af1-63e6-405f-ac41-167964bb8f01",
+      "name": "Prevalidation OK, continue"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1568,
+        336
+      ],
+      "id": "ef29f001-9542-45d8-a51c-9cf40950f704",
+      "name": "Prevalidation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45bb937c-944d-4217-95fd-a12f6c40eedb",
+              "name": "error",
+              "value": "=Error on webhook body parameters. Expects: \"body\":  {\"correo\": \"user@domain.com\" (valid email and valid domains),\"only_user_info\": true/false (boolean, value must not be quoted and all lowercase)}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        448
+      ],
+      "id": "c4f6c8aa-01d4-4291-8ed8-531028888d09",
+      "name": "Prevalidation fails. Error message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9645dce-1ef6-4c9b-8b1e-fd434a2c9a2f",
+              "name": "not_found",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        608
+      ],
+      "id": "c9605587-472a-407c-b0c7-b83b77eda855",
+      "name": "Not found field false and debug info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef955138-cc56-4bc5-84c2-4b350838cc5c",
+              "name": "not_found",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.mesage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        288
+      ],
+      "id": "559b0d7c-b6ad-4bf1-93c7-961099f968f3",
+      "name": "Not found field Return message-1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://admin.googleapis.com/admin/directory/v1/users/{{ $('Webhook').item.json.body.correo }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "suspended",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "40d88ea6-bc6d-46c4-9d5d-9fca7dd287d3",
+      "name": "Suspender Cuenta",
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get User details": {
+      "main": [
+        [
+          {
+            "node": "If get user details not contains error message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Body parameters pre-validation": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If not found": {
+      "main": [
+        [
+          {
+            "node": "Not found field Return message-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If get user details not contains error message": {
+      "main": [
+        [
+          {
+            "node": "Suspender Cuenta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "If valid domains",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If valid domains": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation OK, continue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation OK, continue": {
+      "main": [
+        [
+          {
+            "node": "get User details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation": {
+      "main": [
+        [
+          {
+            "node": "Body parameters pre-validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Suspender Cuenta": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
