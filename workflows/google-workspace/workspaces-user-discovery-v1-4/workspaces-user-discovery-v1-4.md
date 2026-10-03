@@ -28,7 +28,7 @@ The body schema is not declared in the workflow; this is inferred from the expre
 | `groups` | No | `true` adds the groups the user belongs to. |
 | `delegated` | No | `true` adds the mailboxes delegated to the user. |
 | `spaces` | No | `true` adds the user's Chat spaces and group chats. |
-| `driveFiles` | No | `true` adds the Drive file sections (three keys, see below). |
+| `driveFiles` | No | `true` adds the three Drive file sections: `sharedToUser`, `sharedByUser` and `inSharedDrivesOwnedByUser`. |
 
 The six flags are compared strictly with the boolean `true`. A missing flag, `"true"` as a string, or `1` all count as off.
 
