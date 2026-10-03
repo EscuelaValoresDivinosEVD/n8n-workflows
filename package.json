@@ -1,0 +1,9 @@
+{
+  "name": "n8n-workflows",
+  "private": true,
+  "description": "EVD n8n workflows and their generated webhook API docs",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-api-docs.mjs"
+  }
+}
