@@ -26,7 +26,7 @@ The body schema is not declared in the workflow; this is inferred from the expre
 | Field | Required | Used for |
 |---|---|---|
 | `correo` | Yes | Current primary email of the user. Must look like an email and its domain must be in the `Authorized domains` data table. |
-| `correoNuevo` | Yes, in practice | New primary email. See "Tricky nodes": a call without it ends in an error. |
+| `correoNuevo` | Yes, in practice | New primary email. A call without it ends in an error, after any name change has already been applied. |
 | `nombreNuevo` | No | New first name. Skipped when empty. |
 | `ApellidoNuevo` | No | New last name. Skipped when empty. Note the capital `A`. |
 
