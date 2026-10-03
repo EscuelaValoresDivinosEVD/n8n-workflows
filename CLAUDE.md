@@ -51,6 +51,8 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 - From the `.json`: path, method (`GET` when `httpMethod` is absent), auth, response mode, and the body fields (every `body.<field>` the workflow reads; boolean when compared with a boolean operator, otherwise string; only for methods that take a body).
 - From the companion `.md`: the H1 becomes the endpoint summary, the first paragraph the description, the `### Request body` table supplies field descriptions and which fields are required, and the `### Responses` table is copied into the description. Keep those headings and table shapes when writing a companion `.md`, and keep field descriptions self-contained (no "see below").
 - The area folder becomes the tag. The server URL and titles are constants at the top of the script.
+- The server URL is `https://auto.evdsky.com:45333/webhook`. Port 45333 comes from the pinned requests in the exports; the user chose to keep it until they can verify which address the calling services use today.
+- The page is deliberately read-only: the user asked for Scalar's "Test Request" button (it would hit production), "Ask AI" and "Generate MCP" to be hidden. The API client button and share/deploy toolbar are hidden for the same reason. Keep them off; the options are set in the script's HTML template.
 - The spec is embedded in `index.html`, so the page is a single file; Scalar itself loads from the jsDelivr CDN.
 - To preview: `python3 -m http.server` in the repo root, then open `index.html`.
 
