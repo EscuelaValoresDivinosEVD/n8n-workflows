@@ -21,7 +21,8 @@ const WORKFLOWS_DIR = join(ROOT, 'workflows');
 
 const API_TITLE = 'EVD n8n Webhooks';
 const API_VERSION = '1.0.0';
-const SERVER_URL = 'https://auto.evdsky.com/webhook';
+// Port 45333 is what the pinned requests in the n8n exports were sent to. Not re-verified against today's callers.
+const SERVER_URL = 'https://auto.evdsky.com:45333/webhook';
 const SCALAR_CDN = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
 
 // ---------------------------------------------------------------- discovery
@@ -256,9 +257,14 @@ function toHtml(spec) {
     <div id="app"></div>
     <script src="${SCALAR_CDN}"></script>
     <script>
-      // The share / deploy toolbar is hidden: this is an internal API.
+      // Internal API: the page is read-only (no "Test Request", which would hit production)
+      // and Scalar's hosted extras (share/deploy toolbar, AI chat, MCP) are off.
       Scalar.createApiReference('#app', {
+        hideTestRequestButton: true,
+        hideClientButton: true,
         showDeveloperTools: 'never',
+        agent: { disabled: true },
+        mcp: { name: ${JSON.stringify(API_TITLE)}, url: '', disabled: true },
         content: ${embedded},
       });
     </script>

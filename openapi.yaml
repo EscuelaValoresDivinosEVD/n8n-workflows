@@ -8,7 +8,7 @@ info:
 
     The instance is only reachable over the EVD VPN. Request bodies are not declared in n8n; the fields listed here are the ones each workflow reads.
 servers:
-  - url: "https://auto.evdsky.com/webhook"
+  - url: "https://auto.evdsky.com:45333/webhook"
     description: "n8n production webhooks (EVD VPN only)"
 tags:
   - name: "Google Workspace"
