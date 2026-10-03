@@ -1,0 +1,665 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Por ahora vamos a hacer el discovery. Que le solicitemos a n8n en qué grupos está un iniciado, si tiene algún privilegio dentro del mismo workspace, qué unidades compartidas tiene y qué cuentas de correo delegadas.",
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -6576,
+        2128
+      ],
+      "id": "f41bd452-0985-40d8-bd10-99df2d51f6cc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "path": "workspace/users",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -6160,
+        1648
+      ],
+      "id": "970cd832-afaf-4cf8-bc33-42ff342ab865",
+      "name": "Webhook",
+      "webhookId": "e783ff77-85c6-492b-a226-75612d4a7b0a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1sk0BlG31GVRfvCN",
+          "name": "Header Auth Bearer token n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://admin.googleapis.com/admin/directory/v1/groups",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "userKey",
+              "value": "={{ $json.impersonate_email }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "200"
+            },
+            {
+              "name": "fields",
+              "value": "groups(id,email,name),nextPageToken"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3360,
+        752
+      ],
+      "id": "645c0d2f-da5b-45d6-8214-40265bfc4032",
+      "name": "Get user groups",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -768,
+        960
+      ],
+      "id": "c34eed50-b461-4b8f-acfb-197874be0db2",
+      "name": "Merge",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "output": "raw",
+        "projection": "full",
+        "filter": {}
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        -5248,
+        1616
+      ],
+      "id": "1c4cb645-07ac-4430-9544-5d0eb1caf4ea",
+      "name": "get User details",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "07c90d25-654c-4960-8c14-f4a91f564c4f",
+              "leftValue": "={{ $json.description }}",
+              "rightValue": "resource you are requesting could not be found",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4304,
+        1792
+      ],
+      "id": "00525ab5-0d23-4e3e-8c9a-f5e31375b2b2",
+      "name": "If not found"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f5b6cbc-cccd-4b27-a925-e6f39d3f4d7d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4720,
+        1552
+      ],
+      "id": "1ddaa578-7398-4f11-912b-a137d117b146",
+      "name": "If get user details not contains error message"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "0bQyjaMLc5SjLjci",
+          "mode": "list",
+          "cachedResultName": "Cuentas delegadas",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/0bQyjaMLc5SjLjci"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "delegateEmail",
+              "keyValue": "={{ $json.impersonate_email }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -3536,
+        1184
+      ],
+      "id": "74a7a70c-9d80-41f4-8596-32631addc287",
+      "name": "Get rows on Cache Cuentas Delegadas",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "delegatedEmails",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        1184
+      ],
+      "id": "e12e97b5-387e-4b14-bd44-d5d8f0bf6975",
+      "name": "Aggregate Delegated accounts",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9645dce-1ef6-4c9b-8b1e-fd434a2c9a2f",
+              "name": "not_found",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4048,
+        2288
+      ],
+      "id": "ef78d4dd-777b-4d77-9ef4-8947018fde2a",
+      "name": "Not found field false and debug info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef955138-cc56-4bc5-84c2-4b350838cc5c",
+              "name": "not_found",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.mesage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4128,
+        1776
+      ],
+      "id": "bbc6565c-a3cf-421a-b469-3518bae6f600",
+      "name": "Not found field Return message-1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09ab291f-256c-4f2e-a5c4-d43bf72981b9",
+              "name": "email",
+              "value": "={{ $('get User details').item.json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "024edee9-45df-4978-8f47-41a2e8873cdf",
+              "name": "firstName",
+              "value": "={{ $json.name.givenName }}",
+              "type": "string"
+            },
+            {
+              "id": "be2a8f28-df58-40f1-b446-fae25942f12e",
+              "name": "lastName",
+              "value": "={{ $json.name.familyName }}",
+              "type": "string"
+            },
+            {
+              "id": "7ae06f9b-f50b-45c5-8c12-4cc16985873c",
+              "name": "orgUnitPath",
+              "value": "={{ $json.orgUnitPath }}",
+              "type": "string"
+            },
+            {
+              "id": "ec8837c9-410d-4764-98bc-18266a35db98",
+              "name": "isEnrolledIn2Sv",
+              "value": "={{ $('get User details').item.json.isEnrolledIn2Sv }}",
+              "type": "string"
+            },
+            {
+              "id": "2f333c87-9023-4b7a-a728-92fbac081a97",
+              "name": "lastLoginTime",
+              "value": "={{ $json.lastLoginTime }}",
+              "type": "string"
+            },
+            {
+              "id": "059455b8-cad4-4454-890b-e6c4846ebc75",
+              "name": "suspended",
+              "value": "={{ $('get User details').item.json.suspended }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9b9dfa57-c67c-4060-bee0-bc94fbe37388",
+              "name": "archived",
+              "value": "={{ $('get User details').item.json.archived }}",
+              "type": "boolean"
+            },
+            {
+              "id": "8985e018-f778-49c6-aacd-161c0c8373c2",
+              "name": "isAdmin",
+              "value": "={{ $json.isAdmin }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3344,
+        432
+      ],
+      "id": "26f6da33-9c27-4f94-9b56-860ff77d3f86",
+      "name": "Edit Fields Return Minimal User Details"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "545a1847-1b05-4f41-8879-028a3d9f67d7",
+              "name": "impersonate_email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "044e70e6-6669-46ac-8b34-dc1054399d70",
+              "name": "admin_email",
+              "value": "n8n.workspace@evdsky.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3824,
+        1184
+      ],
+      "id": "e4979b94-1b19-4a58-a87b-6ac1bb23eb39",
+      "name": "Set user email field for more details"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8b9ddafd-6446-4c8a-abf9-9f7a08507af4",
+              "name": "delegatedEmail",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3152,
+        1184
+      ],
+      "id": "f91677f8-85db-4590-aa5c-6f75c57da9df",
+      "name": "Leave only delegated email accounts1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "=Usuarios Workspace EVD {{ $now.toFormat('yyyy-MM-dd_HH:mm:ss') }}.xlsx",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        960
+      ],
+      "id": "b605130e-6026-435d-a212-c5c16940735c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n.workspace@evdsky.com",
+        "toEmail": "diana.sandoval@evdsky.com mrigavyadha@evdsky.com",
+        "subject": "Usuarios Worksapce EVD",
+        "html": "=Usuarios Worksapce EVD {{ $now.toFormat('yyyy-MM-dd_HH:mm:ss') }}",
+        "options": {
+          "fileAttachments": "data"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        960
+      ],
+      "id": "83faace3-dcd0-471a-865f-1a11246f2ece",
+      "name": "Send an Email",
+      "webhookId": "5eb8caa3-cb4e-47d7-9303-d6b69f8fe33e",
+      "credentials": {
+        "smtp": {
+          "id": "75R3j6zFufnKWSrt",
+          "name": "SMTP Gmail n8n.workspace"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "get User details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get user groups": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get User details": {
+      "main": [
+        [
+          {
+            "node": "If get user details not contains error message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If not found": {
+      "main": [
+        [
+          {
+            "node": "Not found field Return message-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If get user details not contains error message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Return Minimal User Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set user email field for more details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get rows on Cache Cuentas Delegadas": {
+      "main": [
+        [
+          {
+            "node": "Leave only delegated email accounts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Delegated accounts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Edit Fields Return Minimal User Details": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set user email field for more details": {
+      "main": [
+        [
+          {
+            "node": "Get rows on Cache Cuentas Delegadas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get user groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leave only delegated email accounts1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Delegated accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
