@@ -1,0 +1,632 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "output": "select",
+        "fields": [
+          "primaryEmail"
+        ],
+        "filter": {
+          "query": "orgUnitPath='/Cuentas Delegadas'"
+        }
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "07c5596c-4aae-4425-b0d7-c6a83ff9b5d2",
+      "name": "Get users from OU Cuentas Delegadas",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "path": "ee552566-6908-40e1-a58f-a496562425ce",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -432,
+        464
+      ],
+      "id": "88bf0d76-ed7a-49a4-9391-bc8b3a0e3008",
+      "name": "Webhook",
+      "webhookId": "ee552566-6908-40e1-a58f-a496562425ce",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1sk0BlG31GVRfvCN",
+          "name": "Header Auth Bearer token n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        256
+      ],
+      "id": "114aae27-4fef-43b6-b8ef-9e7714e9946c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "=https://gmail.googleapis.com/gmail/v1/users/{{ $json.impersonate_email }}/settings/delegates",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        0
+      ],
+      "id": "d26b06c8-ff45-4b1e-9193-8f8c20bb58fb",
+      "name": "Get Gmail delegates",
+      "credentials": {
+        "googleApi": {
+          "id": "lD2x8tufXSCQ77B3",
+          "name": "Google Service Account n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f66f1f8d-3dd0-4263-92d0-2e5b642065de",
+              "name": "impersonate_email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "d89f24c2-620f-40f4-a765-1045bd8d934c",
+      "name": "Set impersonate email for service account credential"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "delegates",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "870454d8-8aa3-40ab-bccb-09360740e10e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d0cd6fee-087e-4efe-9295-9c517dc3f061",
+              "name": "email",
+              "value": "={{ $('Set impersonate email for service account credential').item.json.impersonate_email }}",
+              "type": "string"
+            },
+            {
+              "id": "a5ff603d-f943-450f-b2da-d562972ff68a",
+              "name": "delegateEmail",
+              "value": "={{ $json.delegateEmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        -16
+      ],
+      "id": "4ac82431-f956-4be2-b3e0-7437747e97d5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "0bQyjaMLc5SjLjci",
+          "mode": "list",
+          "cachedResultName": "Cuentas delegadas",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/0bQyjaMLc5SjLjci"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        336
+      ],
+      "id": "ce7e7b8f-edfc-4501-ad1c-1630e9fca115",
+      "name": "Get row(s)",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "email, delegateEmail",
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1488,
+        208
+      ],
+      "id": "c125285e-f538-4959-b1f6-348706b932c1",
+      "name": "To delete",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "email, delegateEmail",
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1488,
+        -16
+      ],
+      "id": "1d620bbb-7acf-47c1-85cd-8fde4e6aa908",
+      "name": "To insert",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "0bQyjaMLc5SjLjci",
+          "mode": "list",
+          "cachedResultName": "Cuentas delegadas",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/0bQyjaMLc5SjLjci"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}",
+            "delegateEmail": "={{ $json.delegateEmail }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "delegateEmail",
+              "displayName": "delegateEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        -112
+      ],
+      "id": "64a04c15-22cd-47c4-9368-ea7beece2f24",
+      "name": "Insert row",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "0bQyjaMLc5SjLjci",
+          "mode": "list",
+          "cachedResultName": "Cuentas delegadas",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/0bQyjaMLc5SjLjci"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        112
+      ],
+      "id": "a72d3d18-127f-42c1-b104-2d6aad08d34c",
+      "name": "Delete row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3a83483-4ccd-4692-9bb1-09a424802de3",
+              "leftValue": "={{ Object.keys($input.all()[0].json).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        -16
+      ],
+      "id": "6d8876ac-40f0-40cf-ba89-af55fc08eba2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3a83483-4ccd-4692-9bb1-09a424802de3",
+              "leftValue": "={{ Object.keys($input.all()[0].json).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        208
+      ],
+      "id": "58178b46-8cfc-466d-a9c6-2e0b8007b6e9",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "rowsAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        -16
+      ],
+      "id": "70b8f04d-2996-466b-aed3-5e8a641adb47",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "rowsDeleted",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        240
+      ],
+      "id": "de6dc3b3-5342-440c-b553-6780a05bb0d3",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        48
+      ],
+      "id": "ca475abb-f106-484d-b878-470b2962b36d",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Get users from OU Cuentas Delegadas": {
+      "main": [
+        [
+          {
+            "node": "Set impersonate email for service account credential",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get users from OU Cuentas Delegadas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get users from OU Cuentas Delegadas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gmail delegates": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set impersonate email for service account credential": {
+      "main": [
+        [
+          {
+            "node": "Get Gmail delegates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "To insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "To delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "To insert",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "To delete",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "To delete": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To insert": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete row(s)": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get users from OU Cuentas Delegadas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
