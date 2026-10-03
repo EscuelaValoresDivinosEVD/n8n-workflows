@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.idea/
+*.swp
+*~
+
+# Claude Code local settings (machine-specific, not shared)
+.claude/settings.local.json
+
+# Secrets / environment
+.env
+.env.*
+*.pem
+*.key
+
+# Raw exports straight out of n8n, before pinData is stripped.
+# Keep untouched downloads here so they are never committed by accident.
+raw/
+*.raw.json
+
+# Reference sample of a clipboard export, kept locally with its pinData intact
+# (the pinned request includes a real Authorization header).
+n8n-workflow-sample.json
+
+# Tooling, if a build step is ever added for the Scalar page
+node_modules/
+*.log
+
+brief.md
