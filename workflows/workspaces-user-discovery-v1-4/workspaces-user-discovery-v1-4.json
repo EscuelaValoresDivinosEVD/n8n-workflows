@@ -1,0 +1,2105 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Por ahora vamos a hacer el discovery. Que le solicitemos a n8n en qué grupos está un iniciado, si tiene algún privilegio dentro del mismo workspace, qué unidades compartidas tiene y qué cuentas de correo delegadas.",
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -384
+      ],
+      "id": "48c3c5f4-7d56-4603-8349-b8e8dfacd01b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "workspace/user/details",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -864
+      ],
+      "id": "70891400-aa63-4627-876c-ec0811ddfd12",
+      "name": "Webhook",
+      "webhookId": "e783ff77-85c6-492b-a226-75612d4a7b0a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1sk0BlG31GVRfvCN",
+          "name": "Header Auth Bearer token n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://admin.googleapis.com/admin/directory/v1/groups",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gSuiteAdminOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "userKey",
+              "value": "={{ $json.impersonate_email }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "200"
+            },
+            {
+              "name": "fields",
+              "value": "groups(id,email,name),nextPageToken"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2608,
+        -1296
+      ],
+      "id": "5d832cdb-b141-4666-a807-19e240154f1d",
+      "name": "Get user groups",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 9,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        6288,
+        -816
+      ],
+      "id": "a4a55fd1-2fab-4ac4-84f9-42832399210c",
+      "name": "Merge",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "sharedToUser",
+        "include": "specifiedFields",
+        "fieldsToInclude": "kind, id, name, mimeType, webContentLink, webViewLink, sharingUser, owners",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        -448
+      ],
+      "id": "88828eb3-f93f-4eee-9f6a-d49dbd1bac92",
+      "name": "Aggregate shared_to_user"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "sharedByUser",
+        "include": "specifiedFields",
+        "fieldsToInclude": "kind, id, name, mimeType, webViewLink, webContentLink, permissions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3872,
+        -224
+      ],
+      "id": "97c1a763-79bc-409d-9cd5-7f0ae48501e9",
+      "name": "Aggregate shares with permissions"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "userId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.correo }}",
+          "mode": "userEmail"
+        },
+        "output": "raw",
+        "projection": "full"
+      },
+      "type": "n8n-nodes-base.gSuiteAdmin",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -960
+      ],
+      "id": "6611774b-1a16-429a-b322-80a779c1d7a3",
+      "name": "get User details",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gSuiteAdminOAuth2Api": {
+          "id": "ezL6IWEZ9Wvtixxu",
+          "name": "Google Workspace admin n8n.workspace@evdsky.com"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "433c59b4-0807-4596-9cff-8f87fcfce325",
+              "leftValue": "={{ $json.body.correo }}",
+              "rightValue": "=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -864
+      ],
+      "id": "af095733-bb41-402b-a54b-308cea994e40",
+      "name": "Body parameters pre-validation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "07c90d25-654c-4960-8c14-f4a91f564c4f",
+              "leftValue": "={{ $json.description }}",
+              "rightValue": "resource you are requesting could not be found",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        -720
+      ],
+      "id": "3fc92d7f-bcb8-4ab7-81a0-9959a304e3c3",
+      "name": "If not found"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f5b6cbc-cccd-4b27-a925-e6f39d3f4d7d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1376,
+        -1040
+      ],
+      "id": "de1f75ac-b16e-41fe-aefb-f42a92f6a7c7",
+      "name": "If get user details not contains error message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4123d53d-2573-4e0c-9aa6-b309b515ca96",
+              "leftValue": "={{ $json.sharedWithMeTime }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "897716fc-a506-41c8-ae9b-97e615fc4818",
+              "leftValue": "={{ $json.ownedByMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        3600,
+        -448
+      ],
+      "id": "65519939-1361-4772-9c42-4988f20217a5",
+      "name": "Filter shared_with_me"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5dcfcd4b-0ac4-4817-aa2c-e73efcb38736",
+              "leftValue": "={{ $json.ownedByMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "aa0a2acf-bb65-428d-84b6-e3050d34c2e7",
+              "leftValue": "={{ $json.shared }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        3584,
+        -224
+      ],
+      "id": "0a70cdec-d312-49c9-a936-cad1d85e4183",
+      "name": "Owned and shared by User",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fef07a17-0c84-4ac6-aeaa-97c695d5e4fd",
+              "name": "kind",
+              "value": "={{ $json.kind }}",
+              "type": "string"
+            },
+            {
+              "id": "1e41b876-4b4e-47d1-8d09-d1e2a4d3f008",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "fb6c01fa-a627-474d-93b4-212dca45bcad",
+              "name": "mimeType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "b0367734-190e-4705-8742-9f6a236f4126",
+              "name": "ownedByMe",
+              "value": "={{ $json.ownedByMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "705f9bc1-2f7b-42b7-a1d3-9bc20e2645c7",
+              "name": "shared",
+              "value": "={{ $json.shared }}",
+              "type": "boolean"
+            },
+            {
+              "id": "d6306f1c-92a1-49bb-bc39-0c97a5ce3313",
+              "name": "sharedWithMeTime",
+              "value": "={{ $json.sharedWithMeTime }}",
+              "type": "string"
+            },
+            {
+              "id": "fcf1b901-927d-4df3-954c-1bd644a6b0ab",
+              "name": "webContentLink",
+              "value": "={{ $json.webContentLink }}",
+              "type": "string"
+            },
+            {
+              "id": "09668835-8239-40ae-b00b-2308b030e9a2",
+              "name": "permissions",
+              "value": "={{ $json.permissions }}",
+              "type": "array"
+            },
+            {
+              "id": "0419cd77-cfcc-4c54-abb0-6c4be04c0ef3",
+              "name": "driveId",
+              "value": "={{ $json.driveId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3216,
+        -304
+      ],
+      "id": "3d2db2ee-4668-45af-b77b-b34f39660d92",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "0bQyjaMLc5SjLjci",
+          "mode": "list",
+          "cachedResultName": "Cuentas delegadas",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/0bQyjaMLc5SjLjci"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "delegateEmail",
+              "keyValue": "={{ $json.impersonate_email }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -1088
+      ],
+      "id": "489c9666-64f9-45e5-9b85-2991b0a62cc1",
+      "name": "Get rows on Cache Cuentas Delegadas",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "delegatedEmails",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3296,
+        -1040
+      ],
+      "id": "2b1216ca-abe1-4a22-acac-8fa305e3c042",
+      "name": "Aggregate Delegated accounts",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9645dce-1ef6-4c9b-8b1e-fd434a2c9a2f",
+              "name": "not_found",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1808,
+        -224
+      ],
+      "id": "9da99ac5-f914-417e-b1a1-28524375743b",
+      "name": "Not found field false and debug info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef955138-cc56-4bc5-84c2-4b350838cc5c",
+              "name": "not_found",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "66922148-e249-4608-b028-59b907b454be",
+              "name": "correo",
+              "value": "={{ $('Webhook').item.json.body.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "38144bf8-bde2-468f-9a77-18e463dc4188",
+              "name": "debug.mesage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "81a5da88-1139-4028-ad03-6fbfb253efb8",
+              "name": "debug.description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1728,
+        -736
+      ],
+      "id": "4f03adf0-20e0-4f67-89f7-07f733bc81ed",
+      "name": "Not found field Return message-1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09ab291f-256c-4f2e-a5c4-d43bf72981b9",
+              "name": "email",
+              "value": "={{ $('get User details').item.json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "024edee9-45df-4978-8f47-41a2e8873cdf",
+              "name": "firstName",
+              "value": "={{ $json.name.givenName }}",
+              "type": "string"
+            },
+            {
+              "id": "be2a8f28-df58-40f1-b446-fae25942f12e",
+              "name": "lastName",
+              "value": "={{ $json.name.familyName }}",
+              "type": "string"
+            },
+            {
+              "id": "7ae06f9b-f50b-45c5-8c12-4cc16985873c",
+              "name": "orgUnitPath",
+              "value": "={{ $json.orgUnitPath }}",
+              "type": "string"
+            },
+            {
+              "id": "059455b8-cad4-4454-890b-e6c4846ebc75",
+              "name": "suspended",
+              "value": "={{ $('get User details').item.json.suspended }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9b9dfa57-c67c-4060-bee0-bc94fbe37388",
+              "name": "archived",
+              "value": "={{ $('get User details').item.json.archived }}",
+              "type": "boolean"
+            },
+            {
+              "id": "ec8837c9-410d-4764-98bc-18266a35db98",
+              "name": "isEnrolledIn2Sv",
+              "value": "={{ $('get User details').item.json.isEnrolledIn2Sv }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2512,
+        -2080
+      ],
+      "id": "89ce062f-9328-4f58-b17d-fc1edfbf9ea9",
+      "name": "Edit Fields Return Minimal User Details"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rkrHk1gMjSJ6pTwu",
+          "mode": "list",
+          "cachedResultName": "Authorized domains",
+          "cachedResultUrl": "/projects/YMWrRz3ejkOnWLdx/datatables/rkrHk1gMjSJ6pTwu"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "domain",
+              "keyValue": "={{ $json.body.correo.split('@')[1] }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -944
+      ],
+      "id": "38611f5c-7d6d-4511-a1c9-377aa34c6fdf",
+      "name": "Get row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "429d04da-edd1-4772-a736-3e828a8ca68f",
+              "leftValue": "={{ Object.keys($input.all()[0].json).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        -944
+      ],
+      "id": "3a5d8004-c2c2-4c0b-a2f4-f4a14005987a",
+      "name": "If valid domains"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -960
+      ],
+      "id": "fc09207f-e309-4991-9d55-f0843b97f317",
+      "name": "Prevalidation OK, continue"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -864
+      ],
+      "id": "c30b62b3-103f-4811-b189-fd5d176500e3",
+      "name": "Prevalidation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45bb937c-944d-4217-95fd-a12f6c40eedb",
+              "name": "error",
+              "value": "=Error on webhook body parameters. Expects: \"body\":  {\"correo\": \"user@domain.com\" (valid email and valid domains),\"only_user_info\": true/false (boolean, value must not be quoted and all lowercase)}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -688
+      ],
+      "id": "b9a5cf75-3233-4cb4-a83c-4df106bec563",
+      "name": "Prevalidation fails. Error message"
+    },
+    {
+      "parameters": {
+        "url": "https://chat.googleapis.com/v1/spaces",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filter",
+              "value": "spaceType = \"SPACE\" OR spaceType = \"GROUP_CHAT\""
+            },
+            {
+              "name": "pageSize",
+              "value": "1000"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2896,
+        -752
+      ],
+      "id": "8353bf95-636f-4e75-8372-b490bd5a24f5",
+      "name": "Listar Chats",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleApi": {
+          "id": "lD2x8tufXSCQ77B3",
+          "name": "Google Service Account n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "spaces",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3120,
+        -752
+      ],
+      "id": "8e7c8795-2eb3-4edb-a97a-8cf8bc9dbc30",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f262bb9-57d7-4ef8-be1e-f131edbcfae0",
+              "name": "spaceDisplayName",
+              "value": "={{ $json.displayName }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9f09da-b0b6-4cfd-af8c-4f43c149fe5e",
+              "name": "spaceUri",
+              "value": "={{ $json.spaceUri }}",
+              "type": "string"
+            },
+            {
+              "id": "62188501-7d73-4a15-bcec-c636a0612070",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "de2b4dc6-32ed-4f67-8236-42ff687b3e28",
+              "name": "spaceType",
+              "value": "={{ $json.spaceType }}",
+              "type": "string"
+            },
+            {
+              "id": "64db152d-6675-490f-8200-3f83d1208887",
+              "name": "createTime",
+              "value": "={{ $json.createTime }}",
+              "type": "string"
+            },
+            {
+              "id": "4322abd3-e234-4250-92fb-77bd381e4745",
+              "name": "lastActiveTime",
+              "value": "={{ $json.lastActiveTime }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3344,
+        -752
+      ],
+      "id": "20aca6a3-3e17-4bb9-9a5c-4faf558cd342",
+      "name": "Chats (Espacios)"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "spaces",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        -752
+      ],
+      "id": "21bd4f83-76c8-4765-899d-9f0d64598c3b",
+      "name": "Aggregate spaces"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c32fd731-48dc-4dec-bb09-7226e179dd37",
+              "name": "kind",
+              "value": "={{ $json.kind }}",
+              "type": "string"
+            },
+            {
+              "id": "0391fd8e-92a5-4fa2-a3c4-dd1dd6eae320",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "17101521-5c45-48ea-800b-b50803bc252e",
+              "name": "mimeType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "18109d0a-2fe2-4cae-be80-d6d1f6a6dd4e",
+              "name": "ownedByMe",
+              "value": "={{ $json.ownedByMe }}",
+              "type": "string"
+            },
+            {
+              "id": "d9c3ca44-edc8-41e9-8239-edfb805bbd48",
+              "name": "shared",
+              "value": "={{ $json.shared }}",
+              "type": "string"
+            },
+            {
+              "id": "4654f6b5-e0df-4ccf-914f-b600f368c840",
+              "name": "sharedWithMeTime",
+              "value": "={{ $json.sharedWithMeTime }}",
+              "type": "string"
+            },
+            {
+              "id": "ec92399f-eb86-4b2d-a529-766df8172351",
+              "name": "webContentLink",
+              "value": "={{ $json.webContentLink }}",
+              "type": "string"
+            },
+            {
+              "id": "abcd7b24-0027-490c-9b60-b9dfa09f8c66",
+              "name": "permissions",
+              "value": "={{ $json.permissions }}",
+              "type": "string"
+            },
+            {
+              "id": "fea2098a-07fa-4d80-8c4b-a5760ebd7d9b",
+              "name": "driveId",
+              "value": "={{ $json.driveId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4928,
+        -80
+      ],
+      "id": "710b54c9-de36-4beb-9bd1-7fd2e9b26dc9",
+      "name": "Impersonate Workspade admin"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a647327-dc8c-4e82-9905-c0316b69ec8e",
+              "name": "moreDetails.workspaces_id",
+              "value": "={{ $('get User details').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "be9f081d-3937-4cee-907f-fe251a05d94a",
+              "name": "moreDetails.kind",
+              "value": "={{ $('get User details').item.json.kind }}",
+              "type": "string"
+            },
+            {
+              "id": "8a783d9a-24a2-4178-ad73-5aa834e305dc",
+              "name": "moreDetails.isAdmin",
+              "value": "={{ $('get User details').item.json.isAdmin }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9592f2c7-c9ac-4163-9a1b-81412b360e9b",
+              "name": "moreDetails.isDelegatedAdmin",
+              "value": "={{ $('get User details').item.json.isDelegatedAdmin }}",
+              "type": "boolean"
+            },
+            {
+              "id": "059455b8-cad4-4454-890b-e6c4846ebc75",
+              "name": "moreDetails.suspended",
+              "value": "={{ $('get User details').item.json.suspended }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9b9dfa57-c67c-4060-bee0-bc94fbe37388",
+              "name": "moreDetails.archived",
+              "value": "={{ $('get User details').item.json.archived }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a4142e82-fb8b-4bb7-b56c-e892813e1a65",
+              "name": "moreDetails.emails",
+              "value": "={{ $('get User details').item.json.emails }}",
+              "type": "array"
+            },
+            {
+              "id": "1de1fa54-2f12-4e3a-9842-b22e8ae46f2f",
+              "name": "moreDetails.recoveryEmail",
+              "value": "={{ $('get User details').item.json.recoveryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "3ece0989-b5a8-49a3-9800-26727703b0b1",
+              "name": "moreDetails.recoveryPhone",
+              "value": "={{ $('get User details').item.json.recoveryPhone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        -1872
+      ],
+      "id": "53a3e0b1-d50c-4600-94d5-4dfa053d87e8",
+      "name": "Edit Fields User Details"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "inSharedDrivesOwnedByUser",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        5520,
+        -16
+      ],
+      "id": "5254060a-0b50-4b17-ab17-ad3c1bfffb72",
+      "name": "Aggregate in Shared Drive",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "driveId",
+        "options": {
+          "removeOtherFields": true
+        }
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        4352,
+        208
+      ],
+      "id": "a646f21d-f5dd-463e-92e5-49b51101cb8a",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "driveId",
+        "joinMode": "enrichInput1",
+        "options": {
+          "multipleMatches": "all"
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5312,
+        -16
+      ],
+      "id": "85beb5c9-9aa9-48af-8c4e-7685467e49c8",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "983451c6-12f8-4678-99f0-25694699e0e2",
+              "leftValue": "={{ $json.driveId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        4000,
+        208
+      ],
+      "id": "b94300af-60a6-40c2-ae03-ecb3cb782881",
+      "name": "Filtrar unidad compartida no vacío"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5b5c55e-411f-4ff8-ab79-75bfc1caad2c",
+              "name": "impersonate_email",
+              "value": "n8n.workspace@evdsky.com",
+              "type": "string"
+            },
+            {
+              "id": "2e1f8927-3735-47c0-9c75-01fa0c03f56b",
+              "name": "driveId",
+              "value": "={{ $json.driveId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4672,
+        208
+      ],
+      "id": "3d870b0c-e088-45e2-bdde-d52fc4babbda",
+      "name": "Agregar impersonate email"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "resource": "drive",
+        "operation": "get",
+        "driveId": {
+          "__rl": true,
+          "value": "={{ $json.driveId }}",
+          "mode": "id"
+        },
+        "options": {
+          "useDomainAdminAccess": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4912,
+        208
+      ],
+      "id": "aef4a077-7c55-49a9-afde-edff06123428",
+      "name": "Get shared drive names",
+      "credentials": {
+        "googleApi": {
+          "id": "lD2x8tufXSCQ77B3",
+          "name": "Google Service Account n8n.workspace"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "074d0fb6-5ca3-4147-aa1b-fa342d3a1db6",
+              "name": "driveId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "17dc216b-3646-4282-a803-1baac32dcb25",
+              "name": "sharedDriveName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5152,
+        208
+      ],
+      "id": "e246cf19-847b-481d-9efa-7c906237cef6",
+      "name": "dejar solo nombre a id de unidad compartida"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c8e78df1-c092-40a3-b279-9fb2223e76de",
+              "leftValue": "={{ $json.driveId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "7c8e992e-9408-4cdb-b16e-8ffdebed8a61",
+              "leftValue": "={{ $json.ownedByMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        3584,
+        0
+      ],
+      "id": "27e82863-5fea-4c85-b256-ecda0e41a80e",
+      "name": "En unidad compartida propiedad del usuario",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "resource": "drive",
+        "operation": "list",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2560,
+        -1664
+      ],
+      "id": "58b4c1fc-feae-4988-8da8-82b192fe23d6",
+      "name": "Direct Shared drives",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleApi": {
+          "id": "lD2x8tufXSCQ77B3",
+          "name": "Google Service Account n8n.workspace"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "saredDrives",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3056,
+        -1680
+      ],
+      "id": "29c42c06-5258-48c9-a4ac-e4320c0e2f61",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "545a1847-1b05-4f41-8879-028a3d9f67d7",
+              "name": "impersonate_email",
+              "value": "={{ $json.primaryEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "044e70e6-6669-46ac-8b34-dc1054399d70",
+              "name": "admin_email",
+              "value": "n8n.workspace@evdsky.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1824,
+        -1056
+      ],
+      "id": "0258557f-a93d-49e1-8940-ff67476d9c6e",
+      "name": "Set user email field for more details"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2dcf7586-c425-447c-8710-0fcf96908174",
+              "leftValue": "={{ $('Webhook').item.json.body.sharedDrives }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        -1472
+      ],
+      "id": "2529c5d8-a51a-4cc7-9edd-a5f46ca63cf5",
+      "name": "If sharedDrives True"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4e179e3d-548b-4fb0-991a-7781a84b2132",
+              "leftValue": "={{ $('Webhook').item.json.body.moreDetails }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        -1696
+      ],
+      "id": "8a100434-ee34-4e76-b583-30d3909748f2",
+      "name": "If moreDetails True1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2dcf7586-c425-447c-8710-0fcf96908174",
+              "leftValue": "={{ $('Webhook').item.json.body.groups }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2256,
+        -1280
+      ],
+      "id": "c0e020b4-bc9c-40cd-835e-99b20c49f9b2",
+      "name": "If groups True"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2dcf7586-c425-447c-8710-0fcf96908174",
+              "leftValue": "={{ $('Webhook').item.json.body.delegated }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2272,
+        -1104
+      ],
+      "id": "a98cc3f4-2333-4f81-9fff-531bf0a844cf",
+      "name": "If delegated True"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2dcf7586-c425-447c-8710-0fcf96908174",
+              "leftValue": "={{ $('Webhook').item.json.body.spaces }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2272,
+        -896
+      ],
+      "id": "5276f9e6-ad8c-4748-802e-17daf7b7ab9a",
+      "name": "If spaces True"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ea538301-5a70-4b96-bb56-b367cbe02248",
+              "leftValue": "={{ $('Webhook').item.json.body.driveFiles }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2320,
+        -400
+      ],
+      "id": "bf2f2355-9204-4766-a688-0cd735c47a42",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8b9ddafd-6446-4c8a-abf9-9f7a08507af4",
+              "name": "delegatedEmail",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2928,
+        -1056
+      ],
+      "id": "289cbe23-75a9-4a95-87ec-fdcddb1384a1",
+      "name": "Leave only delegated email accounts1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "trashed = false",
+        "returnAll": true,
+        "filter": {},
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2736,
+        -416
+      ],
+      "id": "66519f64-c2a3-4eb8-825b-f3123fdb95bc",
+      "name": "get all files-folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "lD2x8tufXSCQ77B3",
+          "name": "Google Service Account n8n.workspace"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get user groups": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Aggregate shared_to_user": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Aggregate shares with permissions": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "get User details": {
+      "main": [
+        [
+          {
+            "node": "If get user details not contains error message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Body parameters pre-validation": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If not found": {
+      "main": [
+        [
+          {
+            "node": "Not found field Return message-1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not found field false and debug info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If get user details not contains error message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Return Minimal User Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set user email field for more details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter shared_with_me": {
+      "main": [
+        [
+          {
+            "node": "Aggregate shared_to_user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Owned and shared by User": {
+      "main": [
+        [
+          {
+            "node": "Aggregate shares with permissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter shared_with_me",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Owned and shared by User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "En unidad compartida propiedad del usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get rows on Cache Cuentas Delegadas": {
+      "main": [
+        [
+          {
+            "node": "Leave only delegated email accounts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Delegated accounts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Edit Fields Return Minimal User Details": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "If valid domains",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If valid domains": {
+      "main": [
+        [
+          {
+            "node": "Prevalidation OK, continue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prevalidation fails. Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation OK, continue": {
+      "main": [
+        [
+          {
+            "node": "get User details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevalidation": {
+      "main": [
+        [
+          {
+            "node": "Body parameters pre-validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Chats": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Chats (Espacios)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chats (Espacios)": {
+      "main": [
+        [
+          {
+            "node": "Aggregate spaces",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate spaces": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Impersonate Workspade admin": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields User Details": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Aggregate in Shared Drive": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Agregar impersonate email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate in Shared Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar unidad compartida no vacío": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar impersonate email": {
+      "main": [
+        [
+          {
+            "node": "Get shared drive names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get shared drive names": {
+      "main": [
+        [
+          {
+            "node": "dejar solo nombre a id de unidad compartida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dejar solo nombre a id de unidad compartida": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "En unidad compartida propiedad del usuario": {
+      "main": [
+        [
+          {
+            "node": "Impersonate Workspade admin",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filtrar unidad compartida no vacío",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Direct Shared drives": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Set user email field for more details": {
+      "main": [
+        [
+          {
+            "node": "If moreDetails True1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If sharedDrives True",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If groups True",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If delegated True",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If spaces True",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If sharedDrives True": {
+      "main": [
+        [
+          {
+            "node": "Direct Shared drives",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If moreDetails True1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields User Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If groups True": {
+      "main": [
+        [
+          {
+            "node": "Get user groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If delegated True": {
+      "main": [
+        [
+          {
+            "node": "Get rows on Cache Cuentas Delegadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If spaces True": {
+      "main": [
+        [
+          {
+            "node": "Listar Chats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "get all files-folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leave only delegated email accounts1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Delegated accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get all files-folders": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
