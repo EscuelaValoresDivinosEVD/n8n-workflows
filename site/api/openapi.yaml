@@ -28,7 +28,7 @@ paths:
         |---|---|
         | Any call with valid auth | n8n's immediate "workflow started" response. It says nothing about whether the menu was updated. |
 
-        Workflow: `Crear menú reportes CLEV` — node `Webhook`. Source: `workflows/clev/crear-menu-reportes-clev/crear-menu-reportes-clev.json`.
+        [Workflow documentation: Crear menú reportes CLEV](../#/clev/crear-menu-reportes-clev) — node `Webhook`.
       tags:
         - "CLEV"
       security:
@@ -61,7 +61,7 @@ paths:
         | Report posted | An empty response, once the Basecamp message exists and the link has been stored. |
         | Any step fails | n8n's error response; the failure is also emailed by `Notificación de errores`. |
 
-        Workflow: `Informe de oportunidades CLEV v2.1` — node `Webhook generación reporte`. Source: `workflows/clev/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json`.
+        [Workflow documentation: Informe de oportunidades CLEV v2.1](../#/clev/informe-de-oportunidades-clev-v2-1) — node `Webhook generación reporte`.
       tags:
         - "CLEV"
       security:
@@ -113,7 +113,7 @@ paths:
         |---|---|
         | Any call with valid auth | The output of `Wait`, which is the incoming request passed through. |
 
-        Workflow: `Webhook test` — node `Webhook`. Source: `workflows/clev/webhook-test/webhook-test.json`.
+        [Workflow documentation: Webhook test](../#/clev/webhook-test) — node `Webhook`.
       tags:
         - "CLEV"
       security:
@@ -147,7 +147,7 @@ paths:
         | Validation failed, or user lookup failed | No `Respond to Webhook` node runs, so n8n sends its default response for a finished workflow. The `error`, `not_found` and `debug.*` fields built by the `Set` nodes are **not** returned. |
         | Email did not change | n8n's error response, because `Stop and Error` fails the execution before any response is sent. |
 
-        Workflow: `Cambio email-nombre` — node `Webhook`. Source: `workflows/google-workspace/cambio-email-nombre/cambio-email-nombre.json`.
+        [Workflow documentation: Cambio email-nombre](../#/google-workspace/cambio-email-nombre) — node `Webhook`.
       tags:
         - "Google Workspace"
       security:
@@ -195,7 +195,7 @@ paths:
       description: |-
         Keeps the n8n data table `Cuentas delegadas` in step with the real Gmail delegations. For every mailbox in the `/Cuentas Delegadas` organisational unit it reads who the delegates are, then adds the missing rows to the table and deletes the stale ones.
 
-        Workflow: `Actualizar tabla cuentas delegadas` — node `Webhook`. Source: `workflows/google-workspace/actualizar-tabla-cuentas-delegadas/actualizar-tabla-cuentas-delegadas.json`.
+        [Workflow documentation: Actualizar tabla cuentas delegadas](../#/google-workspace/actualizar-tabla-cuentas-delegadas) — node `Webhook`.
       tags:
         - "Google Workspace"
       security:
@@ -229,7 +229,7 @@ paths:
         | Validation failed | `error` with the text built by `Prevalidation fails. Error message`. |
         | User lookup failed | `not_found`, `correo` and the `debug.*` fields from the `Not found…` node that ran. |
 
-        Workflow: `Workspaces User Discovery v1.4` — node `Webhook`. Source: `workflows/google-workspace/workspaces-user-discovery-v1-4/workspaces-user-discovery-v1-4.json`.
+        [Workflow documentation: Workspaces User Discovery v1.4](../#/google-workspace/workspaces-user-discovery-v1-4) — node `Webhook`.
       tags:
         - "Google Workspace"
       security:
@@ -293,7 +293,7 @@ paths:
         | Validation failed | `error` with the text built by `Prevalidation fails. Error message`. |
         | User lookup failed | `not_found`, `correo` and the `debug.*` fields from the `Not found…` node that ran. |
 
-        Workflow: `Suspender cuenta Workspace v1.0` — node `Webhook`. Source: `workflows/google-workspace/suspender-cuenta-workspace-v1-0/suspender-cuenta-workspace-v1-0.json`.
+        [Workflow documentation: Suspender cuenta Workspace v1.0](../#/google-workspace/suspender-cuenta-workspace-v1-0) — node `Webhook`.
       tags:
         - "Google Workspace"
       security:
@@ -338,7 +338,7 @@ paths:
         | Report sent | The output of `Send an Email`. |
         | User listing failed | `not_found`, `correo` and `debug.*` from the `Not found…` node that ran. |
 
-        Workflow: `Reporte Validación Usuarios Totales v 1` — node `Webhook`. Source: `workflows/google-workspace/reporte-validacion-usuarios-totales-v-1/reporte-validacion-usuarios-totales-v-1.json`.
+        [Workflow documentation: Reporte Validación Usuarios Totales v 1](../#/google-workspace/reporte-validacion-usuarios-totales-v-1) — node `Webhook`.
       tags:
         - "Google Workspace"
       security:
@@ -370,7 +370,7 @@ paths:
         |---|---|
         | Any call with valid auth | n8n's immediate "workflow started" response. |
 
-        Workflow: `test webhook events Iniciados` — node `Webhook`. Source: `workflows/highlevel/test-webhook-events-iniciados/test-webhook-events-iniciados.json`.
+        [Workflow documentation: test webhook events Iniciados](../#/highlevel/test-webhook-events-iniciados) — node `Webhook`.
       tags:
         - "HighLevel"
       security:
@@ -402,7 +402,7 @@ paths:
         |---|---|
         | Any call with valid auth | n8n's immediate "workflow started" response. |
 
-        Workflow: `Copia contacto CRM a teléfono` — node `Webhook`. Source: `workflows/highlevel/copia-contacto-crm-a-telefono/copia-contacto-crm-a-telefono.json`.
+        [Workflow documentation: Copia contacto CRM a teléfono](../#/highlevel/copia-contacto-crm-a-telefono) — node `Webhook`.
       tags:
         - "HighLevel"
       security:
@@ -435,7 +435,7 @@ paths:
         | Row updated | The updated data table row. |
         | HighLevel search fails | n8n's error response; the failure is also emailed by `Notificación de errores`. |
 
-        Workflow: `Actualizar tabla cache iniciados - iniciado actualizado desde PI` — node `Webhook`. Source: `workflows/highlevel/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi.json`.
+        [Workflow documentation: Actualizar tabla cache iniciados - iniciado actualizado desde PI](../#/highlevel/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi) — node `Webhook`.
       tags:
         - "HighLevel"
       security:
@@ -490,7 +490,7 @@ paths:
         | Event is not a join or leave | n8n's default response; the workflow ends at `If`. |
         | Group is not a Colombia group, or no contact has that phone | n8n's error response, because a `Stop and Error` node fails the execution. |
 
-        Workflow: `Actualizar campo Comunidad WhatsApp auto COL` — node `Webhook`. Source: `workflows/highlevel/actualizar-campo-comunidad-whatsapp-auto-col/actualizar-campo-comunidad-whatsapp-auto-col.json`.
+        [Workflow documentation: Actualizar campo Comunidad WhatsApp auto COL](../#/highlevel/actualizar-campo-comunidad-whatsapp-auto-col) — node `Webhook`.
       tags:
         - "HighLevel"
       security:
