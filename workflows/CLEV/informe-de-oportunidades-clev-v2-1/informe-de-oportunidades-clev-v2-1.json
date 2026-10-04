@@ -1,0 +1,1933 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mappings": {
+          "field": [
+            {
+              "field": "=pipelineId",
+              "mapName": "=Pipelines",
+              "defaultValue": "ND",
+              "renameBool": true,
+              "renameValue": "Secuencia"
+            },
+            {
+              "field": "pipelineStageId",
+              "mapName": "Stages",
+              "defaultValue": "ND",
+              "renameBool": true,
+              "renameValue": "Etapa"
+            },
+            {
+              "field": "=contactId",
+              "mapName": "Iniciado",
+              "defaultValue": "PG",
+              "renameBool": true,
+              "renameValue": "Tipo"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-applymap.applyMap",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        368
+      ],
+      "id": "5871a1a9-560b-4ff2-8525-7c15c92668e0",
+      "name": "ApplyMap"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1760,
+        288
+      ],
+      "id": "dbb30d8b-1548-4c43-a604-17dbc69303df",
+      "name": "Create Mapping table"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "opportunities",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1792,
+        1216
+      ],
+      "id": "78f743f0-7e27-4da5-b7f2-edd02c778426",
+      "name": "Split opportunities",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "createMessage",
+        "bucketId": 44535649,
+        "messageBoardId": 9215268341,
+        "subject": "=  Reporte automático - {{ $json.name }} - Corte {{ $now.setLocale('es').toFormat('d MMM y') }}",
+        "status": "active",
+        "content": "={{ $json.report }}",
+        "categoryId": null,
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-basecamp.basecamp4",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        448
+      ],
+      "id": "66dee4e0-8b2d-4f92-be33-c25c8ffc0b9f",
+      "name": "Create a message",
+      "executeOnce": true,
+      "credentials": {
+        "basecamp4OAuth2Api": {
+          "id": "RwdW2MyWL1LsH7Ct",
+          "name": "Basecamp+integración de auto@clev.org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clev/reporte",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4224,
+        480
+      ],
+      "id": "71b73138-c85e-436c-a95e-947445b68ccd",
+      "name": "Webhook generación reporte",
+      "webhookId": "00e1781f-c72e-4148-a449-7be7e71c1e40",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "l03Uxy1XYUmnJuAk",
+          "name": "Header Auth new auto@clev.org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "9rrylZQK1sEASL2L0o3x"
+            },
+            {
+              "name": "pageLimit",
+              "value": "={{ 500 }}"
+            },
+            {
+              "name": "filters",
+              "value": "={{ [\n  {\n    \"group\": \"OR\",\n    \"filters\": [\n      { \"field\": \"customFields.tipo\", \"operator\": \"eq\", \"value\": \"Iniciado\" },\n      { \"field\": \"customFields.tipo\", \"operator\": \"eq\", \"value\": \"Iniciado Ashram\" },\n      { \"field\": \"customFields.tipo\", \"operator\": \"eq\", \"value\": \"Instructor Shakti Yoga\" },\n      { \"field\": \"customFields.tipo\", \"operator\": \"eq\", \"value\": \"Swami\" }\n    ]\n  }\n] }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10000
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "body",
+                    "name": "page",
+                    "value": "={{ $pageCount + 1 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ Math.ceil($response['body']['total']/500) == $pageCount }}",
+              "requestInterval": 10
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2880,
+        112
+      ],
+      "id": "b58204ed-f203-4181-a7a1-4df43121f012",
+      "name": "Search Iniciados"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "contacts",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "customFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2656,
+        112
+      ],
+      "id": "53ef6e7a-59ce-4959-b2aa-332e06a1a5e1",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dcb41551-d93c-484d-9cb9-187cde1ad2ad",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "668414d0-544b-423d-a711-66428a3a64dd",
+              "name": "contactId",
+              "value": "={{ $json.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "827bafb9-5352-4493-90a6-5e0cb967b54c",
+              "name": "pipelineId",
+              "value": "={{ $json.pipelineId }}",
+              "type": "string"
+            },
+            {
+              "id": "4568247f-d9bc-4ab3-b641-4db9aaa59a1b",
+              "name": "pipelineUId",
+              "value": "={{ $json.pipelineId }}",
+              "type": "string"
+            },
+            {
+              "id": "bd5bddc4-128f-430c-bcbd-b25514bef41a",
+              "name": "pipelineStageId",
+              "value": "={{ $json.pipelineStageId }}",
+              "type": "string"
+            },
+            {
+              "id": "eda79416-4fb5-4f46-ae35-dc0791c359e7",
+              "name": "pipelineStageUId",
+              "value": "={{ $json.pipelineStageUId }}",
+              "type": "string"
+            },
+            {
+              "id": "efc3f526-d6b6-4876-acdb-6341fd6f2718",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1648,
+        992
+      ],
+      "id": "4c629aca-d53f-4ff8-af34-415110f036a8",
+      "name": "Opportunities"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "contacts",
+        "options": {
+          "destinationFieldName": "contact_id"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        112
+      ],
+      "id": "1faf3b59-6248-4e7e-95e3-cacd06c28bc8",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ee9c1e3d-ef79-4958-beec-7287e779b3cf",
+              "name": "mapName",
+              "value": "Iniciado",
+              "type": "string"
+            },
+            {
+              "id": "6addd44a-fe59-4214-8342-4cb0e79f0ec0",
+              "name": "input",
+              "value": "={{ $json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "44ed7861-5e19-439a-b5e2-10c780f0695f",
+              "name": "output",
+              "value": "IN",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1984,
+        112
+      ],
+      "id": "c4ff1991-bdbc-4f0b-b82c-7b60fc62772e",
+      "name": "Mappings iniciados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8943d8d8-6ab5-44c5-becb-4fa84a42d6d3",
+              "name": "mapName",
+              "value": "Positions",
+              "type": "string"
+            },
+            {
+              "id": "310f465b-7ca6-431f-a143-fc842b6af44d",
+              "name": "input",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "68b140aa-b2af-4b09-9c45-51f2512be072",
+              "name": "output",
+              "value": "={{ $json.position }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        544
+      ],
+      "id": "a73db31a-101a-4fcf-882c-ac99e60fdde1",
+      "name": "Mappings Posición"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3286fee2-f5dc-46bb-9cc0-60d94b41d118",
+              "name": "mapName",
+              "value": "Stages",
+              "type": "string"
+            },
+            {
+              "id": "56ff1e63-08f4-48f4-b4e9-1f2e53d3554d",
+              "name": "input",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d7e79b01-f048-4d8b-85d7-ca39cdcdf2bc",
+              "name": "output",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1984,
+        400
+      ],
+      "id": "bb1addeb-0180-4a18-82b8-84f01a996648",
+      "name": "Mappings Stages"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9ac44de4-9d00-4256-af0c-ce1533b3b1cd",
+              "name": "mapName",
+              "value": "Pipelines",
+              "type": "string"
+            },
+            {
+              "id": "83c591fb-7fa5-45d4-a531-3ede1dc75163",
+              "name": "input",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f757aa6c-1f4f-4fb6-b165-a28d9ac1c510",
+              "name": "output",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1984,
+        864
+      ],
+      "id": "1f1cf9ee-302f-4a93-a59f-2c560ef29941",
+      "name": "Mappings Pipelines"
+    },
+    {
+      "parameters": {
+        "mappings": {
+          "field": [
+            {
+              "field": "=pipelineId",
+              "mapName": "=Pipelines",
+              "defaultValue": "ND",
+              "renameBool": true,
+              "renameValue": "Secuencia"
+            },
+            {
+              "field": "pipelineStageId",
+              "mapName": "Stages",
+              "defaultValue": "ND",
+              "renameBool": true,
+              "renameValue": "Etapa"
+            },
+            {
+              "field": "position",
+              "mapName": "Positions",
+              "defaultValue": "0",
+              "renameBool": true,
+              "renameValue": "Posición"
+            },
+            {
+              "field": "=contactId",
+              "mapName": "Iniciado",
+              "defaultValue": "PG",
+              "renameBool": true,
+              "renameValue": "Tipo"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-applymap.applyMap",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -112
+      ],
+      "id": "7c46d094-552a-4ce7-b3ec-23d851d2aeea",
+      "name": "ApplyMap1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "opportunity",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        160
+      ],
+      "id": "82902346-52ab-49f1-83d1-4d1f6026e111",
+      "name": "Split opportunities1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dcb41551-d93c-484d-9cb9-187cde1ad2ad",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "668414d0-544b-423d-a711-66428a3a64dd",
+              "name": "contactId",
+              "value": "={{ $json.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "827bafb9-5352-4493-90a6-5e0cb967b54c",
+              "name": "pipelineId",
+              "value": "={{ $json.pipelineId }}",
+              "type": "string"
+            },
+            {
+              "id": "4568247f-d9bc-4ab3-b641-4db9aaa59a1b",
+              "name": "pipelineUId",
+              "value": "={{ $json.pipelineId }}",
+              "type": "string"
+            },
+            {
+              "id": "bd5bddc4-128f-430c-bcbd-b25514bef41a",
+              "name": "pipelineStageId",
+              "value": "={{ $json.pipelineStageId }}",
+              "type": "string"
+            },
+            {
+              "id": "eda79416-4fb5-4f46-ae35-dc0791c359e7",
+              "name": "pipelineStageUId",
+              "value": "={{ $json.pipelineStageUId }}",
+              "type": "string"
+            },
+            {
+              "id": "efc3f526-d6b6-4876-acdb-6341fd6f2718",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        112
+      ],
+      "id": "37e11228-e781-4038-a716-d669ee3b366b",
+      "name": "Opportunities1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "id"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "Secuencia, Etapa, Tipo, pipelineStageUId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        176
+      ],
+      "id": "0e46aabd-b0f9-4bd2-a562-66b6335e98aa",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        176
+      ],
+      "id": "bece36f4-58a0-4464-8606-6793a458f052",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0750ba43-ac57-4ead-a90a-0150440df67b",
+              "leftValue": false,
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        272
+      ],
+      "id": "10edee26-2493-4599-8c2e-871290813afc",
+      "name": "If empty"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "78b5ebc5-adb3-4275-988b-6ad9fa841de9",
+              "leftValue": "={{ Object.values($json).some(v => v !== null && v !== undefined && v !== '') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        128
+      ],
+      "id": "84663b43-e0b4-4979-9b8f-44fd3bc845cb",
+      "name": "Remove empty"
+    },
+    {
+      "parameters": {
+        "mappings": {
+          "field": [
+            {
+              "field": "pipelineStageUId",
+              "mapName": "Positions",
+              "defaultValue": "0",
+              "renameBool": true,
+              "renameValue": "Position"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-applymap.applyMap",
+      "typeVersion": 1,
+      "position": [
+        704,
+        384
+      ],
+      "id": "e8bac357-6928-4c0c-aa51-9643073bbd90",
+      "name": "ApplyMap2"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "Tipo"
+            }
+          ]
+        },
+        "options": {
+          "disableDotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        928,
+        384
+      ],
+      "id": "c5c8a38c-07a0-4045-9220-38248c9e141b",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "Position"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        384
+      ],
+      "id": "c7c9f54c-f91f-4394-93dd-c4d04094bb25",
+      "name": "Sort1"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "Secuencia",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        384
+      ],
+      "id": "4f1bfa86-4b00-45db-80e1-3ec217817348",
+      "name": "Sort2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5768ea44-4736-4b24-b859-7cd57e620278",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "open",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "9fb32768-1db4-46ec-9599-275a95db96d3",
+              "leftValue": "={{ $json.Etapa }}",
+              "rightValue": "Descartado",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1312,
+        368
+      ],
+      "id": "e0873823-ece4-4cca-80a4-d32aa81ddd7e",
+      "name": "If Perdida is not in Descartado",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return (() => {\n  const rows = items.map(item => item.json);\n  const issuer = $('Webhook generación reporte').first().json.body.full_name\n\n  // Get current day and full month name in Spanish (e.g., \"12 octubre\")\n  const hoy = new Date();\n  const fecha = new Intl.DateTimeFormat(\"es-ES\", {\n    day: \"2-digit\",\n    month: \"long\",\n    timeZone: \"Etc/GMT+5\" // Note: GMT+5 means UTC-5 in IANA format\n  }).format(hoy);\n\n  // Build nested structure: Secuencia -> Etapa -> Tipo totals\n  const data = {};\n  let grandTotal = 0;\n\n  for (const row of rows) {\n    const sec = row.Secuencia;\n    const etapa = row.Etapa;\n    const tipo = row.Tipo;\n    const total = Number(row.Total) || 0;\n\n    if (!data[sec]) {\n      data[sec] = { etapas: {}, subtotal: 0 };\n    }\n    if (!data[sec].etapas[etapa]) {\n      data[sec].etapas[etapa] = { tipos: { IN: 0, PG: 0 }, subtotal: 0 };\n    }\n\n    data[sec].etapas[etapa].tipos[tipo] =\n      (data[sec].etapas[etapa].tipos[tipo] || 0) + total;\n    data[sec].etapas[etapa].subtotal += total;\n    data[sec].subtotal += total;\n    grandTotal += total;\n  }\n\n  // Build plain text report\n  let report = `<strong>Reportes corte ${fecha}<br><br></strong>`;\n\n  for (const secuencia of Object.keys(data)) {\n    const sec = data[secuencia];\n\n    report += `<strong>${secuencia}<br></strong>`;\n    report += `Total: ${sec.subtotal}<br>`;\n\n    for (const etapa of Object.keys(sec.etapas)) {\n      const et = sec.etapas[etapa];\n      const inTotal = et.tipos.IN || 0;\n      const pgTotal = et.tipos.PG || 0;\n      report += `-${etapa}: ${et.subtotal} (${inTotal} IN / ${pgTotal} PG)<br>`;\n    }\n\n    report += `<br>`;\n  }\n\n  report += `<strong>Total general: ${grandTotal}<br></strong>`;\n  report += `<br>Reporte solicitado por: ${issuer}`;\n\n  return [{ json: { report } }];\n})();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        384
+      ],
+      "id": "3014c220-973e-4db4-b4e1-2688291d15cf",
+      "name": "Generate HTML text",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4208,
+        256
+      ],
+      "id": "32334341-a296-440d-91e7-484adfeb424f",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0edc472b-f5eb-41aa-ba19-9a944cbed62a",
+              "name": "Secuencia",
+              "value": "={{ $json.Secuencia }}",
+              "type": "string"
+            },
+            {
+              "id": "ddf06e97-9c8d-4e14-962f-c815e5fc0dc0",
+              "name": "Etapa",
+              "value": "={{ $json.Etapa }}",
+              "type": "string"
+            },
+            {
+              "id": "5df90b9a-dabb-4286-8b5b-70a3e8b76fd9",
+              "name": "Tipo",
+              "value": "={{ $json.Tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "5df7be86-37b2-4717-9402-4d814ee8aa39",
+              "name": "Total",
+              "value": "={{ $json.count_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        384
+      ],
+      "id": "eef0c7e5-be91-460e-8f01-de1fc9727386",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "operation": "update",
+        "opportunityId": "={{ $json.id }}",
+        "updateFields": {
+          "pipelineId": "={{ $json.pipelineUId }}",
+          "stageId": "={{ \n  $('Call Get Highlevel pipelines names and ids').item.json.name\n    .find(p => p.id === $json.pipelineUId)\n    ?.stages.find(s => s.name === \"Descartado\")?.id \n}}"
+        },
+        "requestOptions": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-highlevelv2.highLevelv2",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        80
+      ],
+      "id": "d5640906-a814-4f57-a760-f62e9b51c0b8",
+      "name": "Update Perdida opportunity to Stage Descartados1",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "Nbf83BqOVEbmCgEC",
+          "name": "HighLevel auto@clev.org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "af946701-f0f5-477d-b259-e932a8e5a74b",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "old",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -2880,
+        1104
+      ],
+      "id": "4b068343-3946-488f-a28a-0ab23bab45c4",
+      "name": "Not contain old"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YXnUzdYbCiopgUjI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/YXnUzdYbCiopgUjI",
+          "cachedResultName": "Get menu from CRM"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "body_customData_selection_toNumber"
+          ],
+          "schema": [
+            {
+              "id": "body_customData_selection_toNumber",
+              "displayName": "body_customData_selection_toNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -3552,
+        976
+      ],
+      "name": "Call Get menu from crm",
+      "id": "294ca661-3640-42ab-9de6-7915bac52934"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2c5f100-c228-4a62-b629-2d8a48630736",
+              "name": "contacts.id",
+              "value": "={{ $json.contacts.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2432,
+        112
+      ],
+      "id": "a977bd89-3326-4ffb-ad0b-0a1b576d577c",
+      "name": "Leave Id only"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5f0229e5-014a-4794-bd4f-5cc6f0c60d81",
+              "leftValue": "={{ $json.index }}",
+              "rightValue": "={{ $('Menu Selection Number').item.json.menuSelection }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -3328,
+        976
+      ],
+      "id": "adb105ab-9eac-47e2-80df-c217fea126b4",
+      "name": "Filter menu selection"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1a2dfb9-5212-43e6-a646-34583d6ab65c",
+              "leftValue": "={{ $('Menu Selection Number').item.json.menuSelection }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2656,
+        1104
+      ],
+      "id": "efb91471-dd43-4b3b-817e-2763187201e6",
+      "name": "If selection is todos 0"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.customData.selection",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -4000,
+        480
+      ],
+      "id": "cea2adaf-09d6-4054-8087-ea3455d5e5bc",
+      "name": "Extract menu selection"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f9515c6-27b3-401d-b6c9-9ae211f2ab49",
+              "name": "menuSelection",
+              "value": "={{ $json['body.customData.selection'] }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3776,
+        480
+      ],
+      "id": "4212ccb9-6da5-41ea-95d3-a91322cd4925",
+      "name": "Menu Selection Number"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b4f660c6-14d2-4d5e-b214-821101fa3340",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Filter menu selection').item.json.name }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -2464,
+        1248
+      ],
+      "id": "4b856b05-115d-4acf-a9bd-b168a21276f1",
+      "name": "Filter",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "LgDBhVqBJ1l0Zqlb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/LgDBhVqBJ1l0Zqlb",
+          "cachedResultName": "Get Highlevel pipeline stages"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -2208,
+        480
+      ],
+      "name": "Call Get pipeline stages",
+      "id": "4c328a77-fb3e-4ad2-b880-b3e07b41caca"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2048,
+        448
+      ],
+      "id": "280fd3c8-de3a-4baf-8512-fbf9d23a770c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "Webhook sample json data:\n\n[\n  {\n    \"headers\": {\n      \"host\": \"auto.evdsky.com:45333\",\n      \"origin\": \"https:auto.evdsky.com:45333\",\n      \"x-real-ip\": \"<redacted>\",\n      \"x-forwarded-for\": \"<redacted>\",\n      \"x-forwarded-proto\": \"https\",\n      \"x-frame-options\": \"SAMEORIGIN\",\n      \"webhook-auth\": \"<redacted>\",\n      \"connection\": \"close\",\n      \"content-length\": \"1432\",\n      \"accept\": \"application/json, text/plain, */*\",\n      \"content-type\": \"application/json\",\n      \"user-agent\": \"axios/1.7.7\",\n      \"accept-encoding\": \"gzip, compress, deflate, br\",\n      \"traceparent\": \"<redacted>\"\n    },\n    \"params\": {},\n    \"query\": {},\n    \"body\": {\n      \"¿POR QUE MEDIO LLEGASTE A SABER DE NOSOTROS?\": \"\",\n      \"Checkbox 1poi\": \"\",\n      \"Multi Dropdown 7oxa\": [\n        \"Si\"\n      ],\n      \"Single Line 2oqi\": \"\",\n      \"Personal Administración\": \"\",\n      \"Single Line 1g04\": \"\",\n      \"Checkbox 2gw8\": \"\",\n      \"Cursos Aprobados\": \"\",\n      \"Fuente Contacto\": \"\",\n      \"Single Dropdown 6mo6\": \"\",\n      \"Interes\": \"\",\n      \"Multi Dropdown 1074o\": \"\",\n      \"Single Dropdown 10437\": \"\",\n      \"Single Dropdown 8hn6\": \"\",\n      \"Programa\": \"\",\n      \"Modalidad\": \"\",\n      \"Single Dropdown 49iz\": \"\",\n      \"Multi Dropdown 6nh7\": [\n        \"<redacted>\"\n      ],\n      \"Tipo Estudiante\": [\n        \"<redacted>\"\n      ],\n      \"Region\": \"\",\n      \"Estas interesado en:\": \"\",\n      \"Modalidad de Pago\": \"\",\n      \"MENSAJE DE FORMULARIO\": \"\",\n      \"EVD Lista de difusión \": \"\",\n      \"contact_id\": \"<redacted>\",\n      \"first_name\": \"<redacted>\",\n      \"last_name\": \"<redacted>\",\n      \"full_name\": \"<redacted>\",\n      \"email\": \"<redacted>\",\n      \"phone\": \"<redacted>\",\n      \"tags\": \"<redacted>\",\n      \"country\": \"<redacted>\",\n      \"timezone\": \"<redacted>\",\n      \"date_created\": \"<redacted>\",\n      \"date_of_birth\": \"<redacted>\",\n      \"full_address\": \"\",\n      \"contact_type\": \"lead\",\n      \"location\": {\n        \"name\": \"CLEV\",\n        \"address\": \"Sin dirección \",\n        \"city\": \"Cuenca\",\n        \"state\": \"Cuenca\",\n        \"country\": \"EC\",\n        \"postalCode\": \"010150\",\n        \"fullAddress\": \"Sin dirección , Cuenca Cuenca 010150\",\n        \"id\": \"9rrylZQK1sEASL2L0o3x\"\n      },\n      \"message\": {\n        \"type\": 20,\n        \"body\": \"7\"\n      },\n      \"workflow\": {\n        \"id\": \"c9dedb8c-08d2-4e99-aa76-d95467cdeaa0\",\n        \"name\": \"Reporte automático Whatsapp\"\n      },\n      \"triggerData\": {},\n      \"customData\": {\n        \"selection\": \"0\"\n      }\n    },\n    \"webhookUrl\": \"https://auto.evdsky.com:45333/webhook/0314f308-1cf3-44e1-a267-1fa910344f23\",\n    \"executionMode\": \"production\"\n  }\n]",
+        "height": 288,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4944,
+        528
+      ],
+      "id": "059233fe-fda5-43f5-97aa-4ab7f9ad32e0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        448
+      ],
+      "id": "9d3490f8-97ce-4c21-ba73-c215140879dd",
+      "name": "Get Custom Values",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customValues",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        448
+      ],
+      "id": "6f48a270-470e-4c86-975c-ff985dc3d1e8",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8e3cb819-ed06-46e0-8b43-23cd50009ea5",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "custom_values.link_reporte_basecamp",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2912,
+        448
+      ],
+      "id": "4e19cb5c-784a-4ff1-916e-847517754f00",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "name": "value",
+              "value": "={{ $('Create a message').item.json.app_url }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        448
+      ],
+      "id": "7e12c7c1-c35b-4f4d-80b5-d533499579c0",
+      "name": "Update custom_values.link_reporte_basecamp_no_editar__generado_automticamente"
+    },
+    {
+      "parameters": {
+        "content": "Cambiar las autenticaciones de HighLevel de Oauth2 a private integration token"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        16
+      ],
+      "id": "36805d2d-aabe-40d6-894a-57b42a86d468",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "IVSIzc3DronQ0daD",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/IVSIzc3DronQ0daD",
+          "cachedResultName": "Get Highlevel pipelines names and ids"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -3104,
+        1056
+      ],
+      "id": "13a4cdce-3faa-4bca-a7c4-a6ed081f909b",
+      "name": "Call Get Highlevel pipelines names and ids"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "9rrylZQK1sEASL2L0o3x"
+            },
+            {
+              "name": "pipelineId",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version ",
+              "value": "v3"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2192,
+        1232
+      ],
+      "id": "d38bb79c-147b-40f5-8afa-4c9c0b3a20f7",
+      "name": "Get opportunities from menu pipelines",
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "53nRvLQKr8HYKatU",
+          "name": "PIT Highlevel"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "ApplyMap": {
+      "main": [
+        [
+          {
+            "node": "If Perdida is not in Descartado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Mapping table": {
+      "main": [
+        [
+          {
+            "node": "ApplyMap",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "ApplyMap1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split opportunities": {
+      "main": [
+        [
+          {
+            "node": "Opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a message": {
+      "main": [
+        [
+          {
+            "node": "Get Custom Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook generación reporte": {
+      "main": [
+        [
+          {
+            "node": "Extract menu selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Iniciados": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Leave Id only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opportunities": {
+      "main": [
+        [
+          {
+            "node": "ApplyMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Mappings iniciados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mappings iniciados": {
+      "main": [
+        [
+          {
+            "node": "Create Mapping table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mappings Posición": {
+      "main": [
+        [
+          {
+            "node": "ApplyMap2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Mappings Stages": {
+      "main": [
+        [
+          {
+            "node": "Create Mapping table",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Mappings Pipelines": {
+      "main": [
+        [
+          {
+            "node": "Create Mapping table",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "ApplyMap1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split opportunities1": {
+      "main": [
+        [
+          {
+            "node": "Opportunities1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opportunities1": {
+      "main": [
+        [
+          {
+            "node": "ApplyMap1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "ApplyMap2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Remove empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If empty": {
+      "main": [
+        [
+          {
+            "node": "Update Perdida opportunity to Stage Descartados1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split opportunities1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove empty": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ApplyMap2": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Sort1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort1": {
+      "main": [
+        [
+          {
+            "node": "Sort2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Perdida is not in Descartado": {
+      "main": [
+        [
+          {
+            "node": "If empty",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Generate HTML text": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Generate HTML text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Perdida opportunity to Stage Descartados1": {
+      "main": [
+        [
+          {
+            "node": "Split opportunities1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Not contain old": {
+      "main": [
+        [
+          {
+            "node": "If selection is todos 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Get menu from crm": {
+      "main": [
+        [
+          {
+            "node": "Filter menu selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leave Id only": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter menu selection": {
+      "main": [
+        [
+          {
+            "node": "Call Get Highlevel pipelines names and ids",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If selection is todos 0": {
+      "main": [
+        [
+          {
+            "node": "Get opportunities from menu pipelines",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract menu selection": {
+      "main": [
+        [
+          {
+            "node": "Menu Selection Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Menu Selection Number": {
+      "main": [
+        [
+          {
+            "node": "Call Get menu from crm",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call Get pipeline stages",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search Iniciados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Get opportunities from menu pipelines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Get pipeline stages": {
+      "main": [
+        [
+          {
+            "node": "Mappings Stages",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mappings Posición",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Values": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Update custom_values.link_reporte_basecamp_no_editar__generado_automticamente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update custom_values.link_reporte_basecamp_no_editar__generado_automticamente": {
+      "main": [
+        []
+      ]
+    },
+    "Call Get Highlevel pipelines names and ids": {
+      "main": [
+        [
+          {
+            "node": "Not contain old",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mappings Pipelines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get opportunities from menu pipelines": {
+      "main": [
+        [
+          {
+            "node": "Split opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
