@@ -4,6 +4,10 @@
   "description": "EVD n8n workflows and their generated webhook API docs",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-api-docs.mjs"
+    "build": "node scripts/build-api-docs.mjs",
+    "serve": "serve . -l tcp://127.0.0.1:3111"
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
   }
 }
