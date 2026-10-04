@@ -27,7 +27,7 @@ paths:
         |---|---|
         | Any call with valid auth | n8n's immediate "workflow started" response. It says nothing about whether the menu was updated. |
 
-        Workflow: `Crear menú reportes CLEV` — node `Webhook`. Source: `workflows/CLEV/crear-menu-reportes-clev/crear-menu-reportes-clev.json`.
+        Workflow: `Crear menú reportes CLEV` — node `Webhook`. Source: `workflows/clev/crear-menu-reportes-clev/crear-menu-reportes-clev.json`.
       tags:
         - "CLEV"
       security:
@@ -42,7 +42,7 @@ paths:
         "403":
           description: "The authentication header is missing or wrong."
       x-n8n:
-        workflowFile: "workflows/CLEV/crear-menu-reportes-clev/crear-menu-reportes-clev.json"
+        workflowFile: "workflows/clev/crear-menu-reportes-clev/crear-menu-reportes-clev.json"
         node: "Webhook"
         responseMode: "onReceived"
         credential: "Header Auth new auto@clev.org"
@@ -60,7 +60,7 @@ paths:
         | Report posted | An empty response, once the Basecamp message exists and the link has been stored. |
         | Any step fails | n8n's error response; the failure is also emailed by `Notificación de errores`. |
 
-        Workflow: `Informe de oportunidades CLEV v2.1` — node `Webhook generación reporte`. Source: `workflows/CLEV/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json`.
+        Workflow: `Informe de oportunidades CLEV v2.1` — node `Webhook generación reporte`. Source: `workflows/clev/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json`.
       tags:
         - "CLEV"
       security:
@@ -95,7 +95,7 @@ paths:
         "403":
           description: "The authentication header is missing or wrong."
       x-n8n:
-        workflowFile: "workflows/CLEV/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json"
+        workflowFile: "workflows/clev/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json"
         node: "Webhook generación reporte"
         responseMode: "lastNode"
         credential: "Header Auth new auto@clev.org"
@@ -112,7 +112,7 @@ paths:
         |---|---|
         | Any call with valid auth | The output of `Wait`, which is the incoming request passed through. |
 
-        Workflow: `Webhook test` — node `Webhook`. Source: `workflows/CLEV/webhook-test/webhook-test.json`.
+        Workflow: `Webhook test` — node `Webhook`. Source: `workflows/clev/webhook-test/webhook-test.json`.
       tags:
         - "CLEV"
       security:
@@ -127,7 +127,7 @@ paths:
         "403":
           description: "The authentication header is missing or wrong."
       x-n8n:
-        workflowFile: "workflows/CLEV/webhook-test/webhook-test.json"
+        workflowFile: "workflows/clev/webhook-test/webhook-test.json"
         node: "Webhook"
         responseMode: "lastNode"
         credential: "TEst"

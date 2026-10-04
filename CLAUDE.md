@@ -33,7 +33,7 @@ Grep the cleaned files afterwards (`pit-`, `Bearer `, email addresses, IPs) to c
 
 ## Target layout
 
-Workflows are grouped by area under `workflows/` (currently `google-workspace` and `CLEV`). Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
+Workflows are grouped by area under `workflows/` (currently `google-workspace` and `clev`). **Area folder names are always lowercase kebab-case**. Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
 
 ```
 workflows/
@@ -60,7 +60,7 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 
 - From the `.json`: path, method (`GET` when `httpMethod` is absent), auth, response mode, and the body fields (every `body.<field>` the workflow reads; boolean when compared with a boolean operator, otherwise string; only for methods that take a body).
 - From the companion `.md`: the H1 becomes the endpoint summary, the first paragraph the description, the `### Request body` table supplies field descriptions and which fields are required, and the `### Responses` table is copied into the description. Keep those headings and table shapes when writing a companion `.md`, and keep field descriptions self-contained (no "see below").
-- The area folder becomes the tag. The server URL and titles are constants at the top of the script.
+- The area folder becomes the tag, in title case (`google-workspace` → "Google Workspace"). Where that is wrong, add the display name to `AREA_TITLES` in the script: the folder is `clev` but the docs show "CLEV". The server URL and titles are constants at the top of the script.
 - The server URL is `https://auto.evdsky.com:45333/webhook`. Port 45333 comes from the pinned requests in the exports; the user chose to keep it until they can verify which address the calling services use today.
 - The page is deliberately read-only: the user asked for Scalar's "Test Request" button (it would hit production), "Ask AI" and "Generate MCP" to be hidden. The API client button and share/deploy toolbar are hidden for the same reason. Keep them off; the options are set in the script's HTML template.
 - The spec is embedded in `index.html`, so the page is a single file; Scalar itself loads from the jsDelivr CDN.
@@ -77,7 +77,7 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 
 ## Current state
 
-The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/CLEV/`. `openapi.yaml` and `index.html` are generated and cover every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
+The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/clev/`. `openapi.yaml` and `index.html` are generated and cover every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
 
 [n8n-workflow-sample.json](n8n-workflow-sample.json) at the root is **a reference sample, not a tracked workflow**: it is gitignored (its pinned request carries a real `Authorization` header), deliberately left with its `pinData` intact and needs no folder, kebab-case rename, or companion `.md`. Use it to see the shape of a real export. The import rules above apply to actual workflows brought in, not to this file.
 

@@ -25,6 +25,12 @@ const API_VERSION = '1.0.0';
 const SERVER_URL = 'https://auto.evdsky.com:45333/webhook';
 const SCALAR_CDN = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
 
+// Area folders are lowercase kebab-case; the tag shown in the docs is the folder name in
+// title case unless it is listed here.
+const AREA_TITLES = {
+  clev: 'CLEV',
+};
+
 // How each n8n header-auth credential is sent. The header name lives inside the credential,
 // which exports do not include, so it is recorded here by credential name. A webhook whose
 // credential is not listed is documented with the generic "headerAuth" scheme.
@@ -183,7 +189,7 @@ function buildOperations(jsonFile) {
   const slug = basename(jsonFile, '.json');
   const doc = readCompanion(jsonFile);
   const relDir = relative(WORKFLOWS_DIR, dirname(jsonFile)).split('/');
-  const tag = relDir.length > 1 ? titleCase(relDir[0]) : 'Workflows';
+  const tag = relDir.length > 1 ? AREA_TITLES[relDir[0]] ?? titleCase(relDir[0]) : 'Workflows';
   const bodyFields = inferBodyFields(nodes);
 
   return webhooks.map((webhook, i) => {
