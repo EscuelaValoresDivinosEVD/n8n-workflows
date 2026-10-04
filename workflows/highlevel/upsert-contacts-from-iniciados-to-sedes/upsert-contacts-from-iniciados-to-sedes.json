@@ -1,0 +1,948 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "IsF4IohkX1358wkI",
+          "mode": "list",
+          "cachedResultName": "Cache contactos Iniciados SKY",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/IsF4IohkX1358wkI"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3136,
+        1840
+      ],
+      "id": "d68eb183-4fde-45e1-ae16-b1331f436fec",
+      "name": "Get Iniciados SKY"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "p5K85zArH4y1XQ61",
+          "mode": "list",
+          "cachedResultName": "cache location IDs",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/p5K85zArH4y1XQ61"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3136,
+        2176
+      ],
+      "id": "186ac020-dbcb-45e4-9a46-b1ce933412ce",
+      "name": "Get Location IDs sedes"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "dnPzVbYwHPI3hP3B",
+          "mode": "list",
+          "cachedResultName": "CustomFieldsHighLevel",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/dnPzVbYwHPI3hP3B"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -3280,
+        2576
+      ],
+      "id": "5621a324-7e70-407b-afbe-62bd4a05ba7a",
+      "name": "Get Custon Field Sedes"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "sede",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2608,
+        2128
+      ],
+      "id": "82a34696-316d-4ad6-bb28-f599a9c7780a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb01fc09-d600-445e-8b37-9bea8ae86504",
+              "name": "sede",
+              "value": "={{ $json.sede }}",
+              "type": "string"
+            },
+            {
+              "id": "eacea303-2ac0-4c65-95ab-a23957fbdd73",
+              "name": "locationIdSede",
+              "value": "={{ $json.locationId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        2176
+      ],
+      "id": "82c4e3bc-1131-4576-966f-97fa57c1d4c0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "sede",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2368,
+        2368
+      ],
+      "id": "ce95d9ff-dd83-4b28-adec-60280db34355",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d56dd717-e8f7-4626-96d7-8cad3ef383fa",
+              "name": "contactIdIniciados",
+              "value": "={{ $json.contactIdIniciados }}",
+              "type": "string"
+            },
+            {
+              "id": "64d14c7d-773c-4654-bb76-6b3ac4d422fb",
+              "name": "firstName",
+              "value": "={{ $json.firstName }}",
+              "type": "string"
+            },
+            {
+              "id": "5951e72d-aa84-49b4-a7ec-b619a7b8b070",
+              "name": "lastName",
+              "value": "={{ $json.lastName }}",
+              "type": "string"
+            },
+            {
+              "id": "b9b60822-7e8b-4316-82f9-b0288ed6fadd",
+              "name": "phone",
+              "value": "={{ $json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "506d5b2e-de9b-437e-b0e8-3db283e3fdf0",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "4a1cc16e-dbd9-4082-bda9-5c2350088e65",
+              "name": "estadoDelIniciado",
+              "value": "={{ $json.estadoDelIniciado }}",
+              "type": "string"
+            },
+            {
+              "id": "be5f89e8-92ce-4446-b36c-d088a388af75",
+              "name": "sede",
+              "value": "={{ $json.sede }}",
+              "type": "string"
+            },
+            {
+              "id": "df39785b-c376-4112-abb5-67c12b4c7624",
+              "name": "circulo",
+              "value": "={{ $json.circulo }}",
+              "type": "string"
+            },
+            {
+              "id": "fdbe0cbc-f3c2-4be0-a8c9-35f9b1b8c67a",
+              "name": "grupoSky",
+              "value": "={{ $json.grupoSky }}",
+              "type": "string"
+            },
+            {
+              "id": "14a24d14-e151-4fed-a980-f682a425e144",
+              "name": "locationIdSede",
+              "value": "={{ $json.locationIdSede }}",
+              "type": "string"
+            },
+            {
+              "id": "654106d4-801c-4419-8b25-6411e17dd419",
+              "name": "contactIdSede",
+              "value": "={{ $json.contactIdSede }}",
+              "type": "string"
+            },
+            {
+              "id": "4355c838-7855-4740-ae47-d98ef25dc4b9",
+              "name": "estadoDelIniciadoCustomFielIdSede",
+              "value": "={{ $json.estadoDelIniciadoCustomFielIdSede }}",
+              "type": "string"
+            },
+            {
+              "id": "71cf0511-4337-487d-872b-d83346a79838",
+              "name": "circuloCustomFielIdSede",
+              "value": "={{ $json.circuloCustomFielIdSede }}",
+              "type": "string"
+            },
+            {
+              "id": "cc1aa994-e9ae-4655-bac5-8e7e6ac9a6e8",
+              "name": "grupoSkyCustomFielIdSede",
+              "value": "={{ $json.grupoSkyCustomFielIdSede }}",
+              "type": "string"
+            },
+            {
+              "id": "968577f8-a79d-4462-b785-b23b6a3c0f46",
+              "name": "sedeCustomFielIdSede",
+              "value": "={{ $json.sedeCustomFielIdSede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        1840
+      ],
+      "id": "42d673a6-9f5c-41f0-8e5b-79c833a7e149",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.customFieldName }}",
+                    "rightValue": "Estado del Iniciado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ac12c9a7-72d6-4fc9-b772-96f70fab0b16"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Estado del Iniciado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "801502c5-3ca5-4a7f-ada0-ae6ff9ef3c51",
+                    "leftValue": "={{ $json.customFieldName }}",
+                    "rightValue": "Grupo SKY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Grupo SKY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b3bb3a82-6d07-4b72-90d4-33d5f1e4aa2a",
+                    "leftValue": "={{ $json.customFieldName }}",
+                    "rightValue": "={{ 'Círculo' || 'Circulo' }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Círculo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3088,
+        2560
+      ],
+      "id": "1978279d-db41-4071-9502-858de248a939",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad07a25d-04dc-4649-aa77-2b4d4fca1ddd",
+              "name": "sede",
+              "value": "={{ $json.sede }}",
+              "type": "string"
+            },
+            {
+              "id": "0b102bb1-463d-4cdb-a75d-a54e40a96a97",
+              "name": "estadoDelIniciadoCustomFieldIdSede",
+              "value": "={{ $json.customFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "c82715ec-c1f9-4048-aed9-c04c9b896daf",
+              "name": "estadoDelIniciadoCustomFieldKeySede",
+              "value": "={{ $json.customFieldKey }}",
+              "type": "string"
+            },
+            {
+              "id": "e969070f-aaea-4973-8d6a-ab317ea77e9f",
+              "name": "estadoDelIniciadoCustomFieldNameSede",
+              "value": "={{ $json.customFieldName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2720,
+        2480
+      ],
+      "id": "75701180-db87-4000-9e27-1f1621c5e7e0",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad07a25d-04dc-4649-aa77-2b4d4fca1ddd",
+              "name": "sede",
+              "value": "={{ $json.sede }}",
+              "type": "string"
+            },
+            {
+              "id": "0b102bb1-463d-4cdb-a75d-a54e40a96a97",
+              "name": "grupoSkyCustomFieldIdSede",
+              "value": "={{ $json.customFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "c82715ec-c1f9-4048-aed9-c04c9b896daf",
+              "name": "grupoSkyCustomFielKeySede",
+              "value": "={{ $json.customFieldKey }}",
+              "type": "string"
+            },
+            {
+              "id": "e969070f-aaea-4973-8d6a-ab317ea77e9f",
+              "name": "grupoSkyCustomFieldNameSede",
+              "value": "={{ $json.customFieldName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2720,
+        2656
+      ],
+      "id": "9115b485-4c37-403b-a9de-f1006d0f6e03",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad07a25d-04dc-4649-aa77-2b4d4fca1ddd",
+              "name": "sede",
+              "value": "={{ $json.sede }}",
+              "type": "string"
+            },
+            {
+              "id": "0b102bb1-463d-4cdb-a75d-a54e40a96a97",
+              "name": "circuloCustomFieldIdSede",
+              "value": "={{ $json.customFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "c82715ec-c1f9-4048-aed9-c04c9b896daf",
+              "name": "circuloCustomFieldKeySede",
+              "value": "={{ $json.customFieldKey }}",
+              "type": "string"
+            },
+            {
+              "id": "e969070f-aaea-4973-8d6a-ab317ea77e9f",
+              "name": "circuloCustomFieldNameSede",
+              "value": "={{ $json.customFieldName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2720,
+        2832
+      ],
+      "id": "cc6b674e-d323-43c8-b455-b4c74a98dbd3",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "sede",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2144,
+        2624
+      ],
+      "id": "e656c9eb-107a-4276-b186-58b89b9c25a6",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "sede",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1856,
+        2800
+      ],
+      "id": "6e0c2c90-630a-49ac-bf87-7223882c8498",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "l0qufeMRpgfP3XCb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/l0qufeMRpgfP3XCb",
+          "cachedResultName": "Sub. Upsert contact by email multi credential Iniciados Sedes"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sede",
+              "displayName": "sede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "locationIdSede",
+              "displayName": "locationIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "firstName",
+              "displayName": "firstName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "lastName",
+              "displayName": "lastName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "estadoDelIniciado",
+              "displayName": "estadoDelIniciado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "estadoDelIniciadoCustomFieldIdSede",
+              "displayName": "estadoDelIniciadoCustomFieldIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "estadoDelIniciadoCustomFieldKeySede",
+              "displayName": "estadoDelIniciadoCustomFieldKeySede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "circulo",
+              "displayName": "circulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "circuloCustomFieldIdSede",
+              "displayName": "circuloCustomFieldIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "circuloCustomFieldKeySede",
+              "displayName": "circuloCustomFieldKeySede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "grupoSky",
+              "displayName": "grupoSky",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "grupoSkyCustomFieldIdSede",
+              "displayName": "grupoSkyCustomFieldIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "grupoSkyCustomFielKeySede",
+              "displayName": "grupoSkyCustomFielKeySede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1648,
+        2800
+      ],
+      "id": "154446ce-5836-4cb7-848e-ff26ebb9dd20",
+      "name": "Call 'Upsert contact by email multi credential'",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3632,
+        2176
+      ],
+      "id": "32dffcd3-0e6a-4b62-8422-79ebdfb33525",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3968,
+        2064
+      ],
+      "id": "4cbfab72-03f1-469c-8163-a9476e111f8d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $json.firstName }}\",\n  \"lastName\": \"{{ $json.lastName }}\",\n  \"email\": \"{{ $json.email }}\",\n  \"locationId\": \"NbtZ4y2L21I4wFGw8NTs\",\n  \"customFields\": [\n    {\n      \"id\": \"81svK1GMXnsK1ylAdzNU\",\n      \"field_value\": \"{{ $json.estadoDelIniciado }}\"\n    },\n    {\n      \"id\": \"TIPvi2VmaGCrzd33vtvO\",\n      \"field_value\": \"{{ $json.circulo }}\"\n    },\n    {\n      \"id\": \"FmNjY9hVLbyyzTAQHEmB\",\n      \"field_value\": \"{{ $json.grupoSky }}\"\n    }\n  ]\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10001
+            }
+          },
+          "redirect": {
+            "redirect": {
+              "followRedirects": true,
+              "maxRedirects": 21
+            }
+          },
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1648,
+        2592
+      ],
+      "id": "f65418db-43c3-4093-9263-6e74d25be67d",
+      "name": "Upsert contacts Global",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "O5VIrmRZ8U44X95T",
+          "name": "Bearer Auth Global Highlevel"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get Iniciados SKY": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Location IDs sedes": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custon Field Sedes": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Call 'Upsert contact by email multi credential'",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upsert contacts Global",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Iniciados SKY",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Custon Field Sedes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Location IDs sedes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Iniciados SKY",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Location IDs sedes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Custon Field Sedes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
