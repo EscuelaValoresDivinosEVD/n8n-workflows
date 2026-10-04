@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A documentation and version-control repo for the n8n workflows that run EVD's day-to-day automations. There is no application code, lint, or test tooling here — the content is exported n8n workflow JSON plus documentation generated from it. The only command is `npm run build` (plain Node, no dependencies), which regenerates the webhook API docs. [brief.md](brief.md) is the source of truth for the project's goals.
+A documentation and version-control repo for the n8n workflows that run EVD's day-to-day automations. There is no application code, lint, or test tooling here — the content is exported n8n workflow JSON plus documentation generated from it. There are two commands: `npm run build` (plain Node), which regenerates the webhook API docs, and `npm run serve`, which serves the repo root at http://localhost:3000 with the `serve` dev dependency (run `npm install` once). [brief.md](brief.md) is the source of truth for the project's goals.
 
 The workflows run on a self-hosted n8n Community instance at https://auto.evdsky.com/, reachable only over the EVD VPN. Don't assume the instance is reachable from this machine; workflow JSON is exported from n8n and brought into the repo by the user.
 
@@ -66,7 +66,8 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 - The server URL is `https://auto.evdsky.com:45333/webhook`. Port 45333 comes from the pinned requests in the exports; the user chose to keep it until they can verify which address the calling services use today.
 - The page is deliberately read-only: the user asked for Scalar's "Test Request" button (it would hit production), "Ask AI" and "Generate MCP" to be hidden. The API client button and share/deploy toolbar are hidden for the same reason. Keep them off; the options are set in the script's HTML template.
 - The spec is embedded in `index.html`, so the page is a single file; Scalar itself loads from the jsDelivr CDN.
-- To preview: the user keeps `index.html` served at http://localhost:3000 — use that, don't start another server. **If localhost:3000 is not running, remind the user to start it** (check with `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/`).
+- To preview: the user keeps `index.html` served at http://localhost:3000 — use that, don't start another server. **If localhost:3000 is not running, remind the user to start it with `npm run serve`** (check with `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/`).
+- `npm run serve` binds to 127.0.0.1 only, on purpose: `serve` listens on every network interface by default and serves the whole folder, including the gitignored `raw/` exports that still hold tokens and personal data. Don't change it to a bare `serve .`.
 - Auth: the header name of an n8n header-auth credential is not in the export, so the script has an `AUTH_SCHEMES` map keyed by credential name (Workspace = `Authorization: Bearer`, CLEV = `webhook-auth` header). Add an entry when a new webhook credential shows up; unknown credentials fall back to a generic placeholder scheme.
 - Nested body fields are written as dotted paths in the `### Request body` table (e.g. `customData.selection`) and become nested objects in the spec.
 
