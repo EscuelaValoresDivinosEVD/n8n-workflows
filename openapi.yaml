@@ -11,8 +11,126 @@ servers:
   - url: "https://auto.evdsky.com:45333/webhook"
     description: "n8n production webhooks (EVD VPN only)"
 tags:
+  - name: "CLEV"
   - name: "Google Workspace"
 paths:
+  "/clev/create-menu":
+    post:
+      operationId: "crear-menu-reportes-clev"
+      summary: "Crear menú reportes CLEV"
+      description: |-
+        Regenerates the numbered menu of HighLevel pipelines that people choose from when they ask for a report. It lists the current pipelines, numbers them, and writes the menu text and the list of valid numbers into two HighLevel custom values.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Any call with valid auth | n8n's immediate "workflow started" response. It says nothing about whether the menu was updated. |
+
+        Workflow: `Crear menú reportes CLEV` — node `Webhook`. Source: `workflows/CLEV/crear-menu-reportes-clev/crear-menu-reportes-clev.json`.
+      tags:
+        - "CLEV"
+      security:
+        - clevWebhookAuth: []
+      responses:
+        "200":
+          description: "Sent immediately, before the workflow runs. The body only confirms that the workflow was started."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/CLEV/crear-menu-reportes-clev/crear-menu-reportes-clev.json"
+        node: "Webhook"
+        responseMode: "onReceived"
+        credential: "Header Auth new auto@clev.org"
+  "/clev/reporte":
+    post:
+      operationId: "informe-de-oportunidades-clev-v2-1"
+      summary: "Informe de oportunidades CLEV v2.1"
+      description: |-
+        Builds a report of HighLevel opportunities, counted by pipeline, stage and contact type, and posts it as a message in Basecamp. It is called over a webhook with the number of the pipeline the requester picked from a menu, and afterwards stores the link to the Basecamp message back in HighLevel.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Report posted | An empty response, once the Basecamp message exists and the link has been stored. |
+        | Any step fails | n8n's error response; the failure is also emailed by `Notificación de errores`. |
+
+        Workflow: `Informe de oportunidades CLEV v2.1` — node `Webhook generación reporte`. Source: `workflows/CLEV/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json`.
+      tags:
+        - "CLEV"
+      security:
+        - clevWebhookAuth: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: "object"
+              properties:
+                full_name:
+                  type: "string"
+                  description: "Name of the requester, printed at the end of the report (\"Reporte solicitado por\")."
+                customData:
+                  type: "object"
+                  properties:
+                    selection:
+                      type: "string"
+                      description: "Number of the menu entry the requester chose. `0` means all pipelines; any other number is a pipeline's position in the menu stored in HighLevel."
+                  required:
+                    - "selection"
+              required:
+                - "customData"
+      responses:
+        "200":
+          description: "The output of the last node the workflow executed, returned once the workflow has finished."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/CLEV/informe-de-oportunidades-clev-v2-1/informe-de-oportunidades-clev-v2-1.json"
+        node: "Webhook generación reporte"
+        responseMode: "lastNode"
+        credential: "Header Auth new auto@clev.org"
+  "/test":
+    post:
+      operationId: "webhook-test"
+      summary: "Webhook test"
+      description: |-
+        A two-node test workflow: a webhook followed by a wait. It does nothing else and looks like a leftover from trying out webhook authentication, but it is published, so its endpoint is live.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Any call with valid auth | The output of `Wait`, which is the incoming request passed through. |
+
+        Workflow: `Webhook test` — node `Webhook`. Source: `workflows/CLEV/webhook-test/webhook-test.json`.
+      tags:
+        - "CLEV"
+      security:
+        - headerAuth: []
+      responses:
+        "200":
+          description: "The output of the last node the workflow executed, returned once the workflow has finished."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/CLEV/webhook-test/webhook-test.json"
+        node: "Webhook"
+        responseMode: "lastNode"
+        credential: "TEst"
   "/5cb58ab5-2ee7-4020-be98-0ac665e594d1":
     post:
       operationId: "cambio-email-nombre"
@@ -32,7 +150,7 @@ paths:
       tags:
         - "Google Workspace"
       security:
-        - headerAuth: []
+        - workspaceBearer: []
       requestBody:
         required: true
         content:
@@ -80,7 +198,7 @@ paths:
       tags:
         - "Google Workspace"
       security:
-        - headerAuth: []
+        - workspaceBearer: []
       responses:
         "200":
           description: "Sent immediately, before the workflow runs. The body only confirms that the workflow was started."
@@ -114,7 +232,7 @@ paths:
       tags:
         - "Google Workspace"
       security:
-        - headerAuth: []
+        - workspaceBearer: []
       requestBody:
         required: true
         content:
@@ -178,7 +296,7 @@ paths:
       tags:
         - "Google Workspace"
       security:
-        - headerAuth: []
+        - workspaceBearer: []
       requestBody:
         required: true
         content:
@@ -223,7 +341,7 @@ paths:
       tags:
         - "Google Workspace"
       security:
-        - headerAuth: []
+        - workspaceBearer: []
       responses:
         "200":
           description: "The output of the last node the workflow executed, returned once the workflow has finished."
@@ -240,7 +358,17 @@ paths:
         credential: "Header Auth Bearer token n8n.workspace"
 components:
   securitySchemes:
+    clevWebhookAuth:
+      type: "apiKey"
+      in: "header"
+      name: "webhook-auth"
+      description: "Send the secret in the `webhook-auth` header. n8n credential: `Header Auth new auto@clev.org`."
     headerAuth:
+      type: "apiKey"
+      in: "header"
+      name: "Authorization"
+      description: "n8n header auth. The header name and value are held in the n8n credential named on the endpoint; the header name shown here is a placeholder."
+    workspaceBearer:
       type: "http"
       scheme: "bearer"
-      description: "n8n header auth. Send `Authorization: Bearer <token>`; the token is held in the n8n credential named on each endpoint."
+      description: "Send `Authorization: Bearer <token>`. n8n credential: `Header Auth Bearer token n8n.workspace`."

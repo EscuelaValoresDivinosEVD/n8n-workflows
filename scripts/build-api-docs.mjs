@@ -25,6 +25,24 @@ const API_VERSION = '1.0.0';
 const SERVER_URL = 'https://auto.evdsky.com:45333/webhook';
 const SCALAR_CDN = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
 
+// How each n8n header-auth credential is sent. The header name lives inside the credential,
+// which exports do not include, so it is recorded here by credential name. A webhook whose
+// credential is not listed is documented with the generic "headerAuth" scheme.
+const AUTH_SCHEMES = {
+  'Header Auth Bearer token n8n.workspace': {
+    id: 'workspaceBearer',
+    scheme: { type: 'http', scheme: 'bearer', description: 'Send `Authorization: Bearer <token>`. n8n credential: `Header Auth Bearer token n8n.workspace`.' },
+  },
+  'Header Auth new auto@clev.org': {
+    id: 'clevWebhookAuth',
+    scheme: { type: 'apiKey', in: 'header', name: 'webhook-auth', description: 'Send the secret in the `webhook-auth` header. n8n credential: `Header Auth new auto@clev.org`.' },
+  },
+};
+const GENERIC_AUTH = {
+  id: 'headerAuth',
+  scheme: { type: 'apiKey', in: 'header', name: 'Authorization', description: 'n8n header auth. The header name and value are held in the n8n credential named on the endpoint; the header name shown here is a placeholder.' },
+};
+
 // ---------------------------------------------------------------- discovery
 
 // A workflow file is <dir>/<name>/<name>.json, at any depth under workflows/.
@@ -91,20 +109,57 @@ function* walkStrings(value, condition = null) {
   }
 }
 
-// Body fields are not declared anywhere: collect every `body.<field>` the workflow reads.
-// A field compared with a boolean operator is documented as boolean, anything else as string.
+// Body fields are not declared anywhere: collect every `body.<field>` the workflow reads,
+// keyed by dotted path (`correo`, `customData.selection`). A trailing method call such as
+// `body.correo.split(` is not part of the path. A field compared with a boolean operator is
+// documented as boolean, anything else as string.
 function inferBodyFields(nodes) {
   const fields = new Map();
   for (const node of nodes) {
     if (node.type === 'n8n-nodes-base.stickyNote') continue;
     for (const { text, condition } of walkStrings(node.parameters)) {
-      for (const m of text.matchAll(/\bbody\.([A-Za-z_]\w*)/g)) {
+      for (const m of text.matchAll(/\bbody((?:\.[A-Za-z_]\w*)+)(\()?/g)) {
+        const segments = m[1].slice(1).split('.');
+        if (m[2]) segments.pop();
+        if (!segments.length) continue;
+        const path = segments.join('.');
         const isBoolean = condition?.operator?.type === 'boolean' && condition.leftValue === text;
-        if (!fields.has(m[1]) || isBoolean) fields.set(m[1], isBoolean ? 'boolean' : 'string');
+        if (!fields.has(path) || isBoolean) fields.set(path, isBoolean ? 'boolean' : 'string');
       }
     }
   }
   return fields;
+}
+
+// Turns the dotted paths into a nested object schema, adding descriptions and required
+// flags from the companion doc (looked up by the same dotted path).
+function bodySchema(fields, docFields) {
+  const root = { type: 'object', properties: {} };
+  for (const [path, type] of fields) {
+    const segments = path.split('.');
+    let node = root;
+    segments.forEach((segment, i) => {
+      const leaf = i === segments.length - 1;
+      const existing = node.properties[segment];
+      if (leaf) {
+        if (existing?.type !== 'object') node.properties[segment] = { type };
+        const doc = docFields[path];
+        if (doc?.description) node.properties[segment].description = doc.description;
+        if (doc?.required) {
+          // A required leaf makes every object on the way to it required too.
+          let parent = root;
+          segments.forEach((s, j) => {
+            (parent.required ??= []).includes(s) || parent.required.push(s);
+            if (j < segments.length - 1) parent = parent.properties[s];
+          });
+        }
+      } else {
+        if (existing?.type !== 'object') node.properties[segment] = { type: 'object', properties: {} };
+        node = node.properties[segment];
+      }
+    });
+  }
+  return root;
 }
 
 const titleCase = (slug) => slug.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
@@ -136,6 +191,7 @@ function buildOperations(jsonFile) {
     const path = '/' + String(webhook.parameters.path).replace(/^\/+/, '');
     const authCredential = Object.values(webhook.credentials ?? {})[0]?.name;
     const authenticated = (webhook.parameters.authentication ?? 'none') !== 'none';
+    const auth = authenticated ? AUTH_SCHEMES[authCredential] ?? GENERIC_AUTH : null;
 
     const description = [
       doc.summary,
@@ -148,19 +204,11 @@ function buildOperations(jsonFile) {
       summary: doc.title ?? titleCase(slug),
       description,
       tags: [tag],
-      security: authenticated ? [{ headerAuth: [] }] : [],
+      security: auth ? [{ [auth.id]: [] }] : [],
     };
 
     if (!['get', 'head', 'delete'].includes(method) && bodyFields.size) {
-      const properties = {};
-      const required = [];
-      for (const [name, type] of bodyFields) {
-        properties[name] = { type };
-        if (doc.fields[name]?.description) properties[name].description = doc.fields[name].description;
-        if (doc.fields[name]?.required) required.push(name);
-      }
-      const schema = { type: 'object', properties };
-      if (required.length) schema.required = required;
+      const schema = bodySchema(bodyFields, doc.fields);
       operation.requestBody = { required: true, content: { 'application/json': { schema } } };
     }
 
@@ -176,7 +224,7 @@ function buildOperations(jsonFile) {
       ...(authCredential && { credential: authCredential }),
     };
 
-    return { path, method, operation, tag };
+    return { path, method, operation, tag, auth };
   });
 }
 
@@ -205,13 +253,9 @@ function buildSpec() {
     tags: [...new Set(operations.map((o) => o.tag))].map((name) => ({ name })),
     paths,
     components: {
-      securitySchemes: {
-        headerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          description: 'n8n header auth. Send `Authorization: Bearer <token>`; the token is held in the n8n credential named on each endpoint.',
-        },
-      },
+      securitySchemes: Object.fromEntries(
+        operations.filter((o) => o.auth).map((o) => [o.auth.id, o.auth.scheme]).sort(([a], [b]) => a.localeCompare(b)),
+      ),
     },
   };
 }
