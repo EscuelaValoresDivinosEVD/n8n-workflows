@@ -1,0 +1,705 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha/participants",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        160
+      ],
+      "id": "3becfb1f-1ccf-4259-acf8-0042adb04891",
+      "name": "Webhook",
+      "webhookId": "50ce3322-3e3e-4aa7-9aa6-1f597dc75290",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "psZv93SrO3IkUx5T",
+          "name": "Header Auth n8n.highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Contacts",
+        "operation": "Get",
+        "session": "={{ $json.body.session }}",
+        "contactId": "={{ $json.body.payload.participants[0].id }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        144,
+        -144
+      ],
+      "id": "a39917f4-47af-462e-a79b-a9b8aaeef6a4",
+      "name": "Get contact basic info",
+      "credentials": {
+        "wahaApi": {
+          "id": "Y4Ff0AdNYa0j7Oga",
+          "name": "WAHA account n8n.evdsky"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ca37149-ab73-4412-a588-fea3f7023eac",
+              "leftValue": "={{ $json.body.payload.type }}",
+              "rightValue": "join",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "9bb28fcf-2fe6-402a-bb49-ea33a579c3d9",
+              "leftValue": "={{ $json.body.payload.type }}",
+              "rightValue": "leave",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -128,
+        160
+      ],
+      "id": "6f90bf13-d920-4ad9-b675-28e45e2892c8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "dnPzVbYwHPI3hP3B",
+          "mode": "list",
+          "cachedResultName": "CustomFieldsHighLevel",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/dnPzVbYwHPI3hP3B"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customFieldName",
+              "condition": "ilike",
+              "keyValue": "Grupo de avisos WhatsApp"
+            },
+            {
+              "keyName": "sede",
+              "condition": "ilike",
+              "keyValue": "={{ $json.name.trim().split(' ').pop() }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        144
+      ],
+      "id": "3a683b2c-d93d-4561-bf07-9c88b95dbb94",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "resource": "Groups",
+        "operation": "Get Group",
+        "session": "={{ $json.body.session }}",
+        "id": "={{ $json.body.payload.group.id }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        128,
+        144
+      ],
+      "id": "eccde229-2a5e-49d1-b855-72a23fd0147b",
+      "name": "Get the group.",
+      "credentials": {
+        "wahaApi": {
+          "id": "Y4Ff0AdNYa0j7Oga",
+          "name": "WAHA account n8n.evdsky"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc90fedd-8986-44b8-bf2e-fac956bc738c",
+              "name": "number",
+              "value": "=+{{ $json.number }}",
+              "type": "string"
+            },
+            {
+              "id": "18ad2e7f-8139-4dab-8423-19604c1ce1c5",
+              "name": "type",
+              "value": "={{ $('Webhook').item.json.body.payload.type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        -144
+      ],
+      "id": "99d88e77-6849-4a3a-af32-6d04b909a469",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        32
+      ],
+      "id": "17643b39-3195-4a39-81fc-e09246db5b63",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.locationId }}\",\n  \"pageLimit\": 500,\n  \"filters\": [\n    {\n      \"field\": \"phone\",\n      \"operator\": \"contains\",\n      \"value\": \"{{ $json.number }}\"\n    }\n  ]\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1152,
+        32
+      ],
+      "id": "c2f82b54-288a-43c6-b863-0ebb61feb8cb",
+      "name": "Search contact in Highlevel",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "PyXklTRTJY2dAosR",
+          "name": "Bearer Auth Colombia Highlevel"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"id\": \"{{ $json.customFieldId }}\",\n      \"field_value\": \"{{ $json.customFieldContent }}\"\n    }\n  ]\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 80,
+              "batchInterval": 10001
+            }
+          },
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2432,
+        -16
+      ],
+      "id": "7b07fa0a-7737-4e09-ae04-0eabfc6dba90",
+      "name": "Update Grupo Avisos",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 4000,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "PyXklTRTJY2dAosR",
+          "name": "Bearer Auth Colombia Highlevel"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53d9fc08-a38c-4df4-a3dc-f749521cb5f6",
+              "name": "contactId",
+              "value": "={{ $json.contacts[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "11409e75-137f-4f3a-8c82-5447805b824f",
+              "name": "locationId",
+              "value": "={{ $('Merge').item.json.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "dfe841e1-1463-417f-9d50-7d60871f1997",
+              "name": "customFieldId",
+              "value": "={{ $('Merge').item.json.customFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "5d4af67b-0219-4be7-87ce-fd8f68ee3c73",
+              "name": "customFieldContent",
+              "value": "Ingresado",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2064,
+        -128
+      ],
+      "id": "729715d1-48ef-4c5c-b0d1-3fe99956f3d7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53d9fc08-a38c-4df4-a3dc-f749521cb5f6",
+              "name": "contactId",
+              "value": "={{ $json.contacts[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "11409e75-137f-4f3a-8c82-5447805b824f",
+              "name": "locationId",
+              "value": "={{ $('Merge').item.json.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "dfe841e1-1463-417f-9d50-7d60871f1997",
+              "name": "customFieldId",
+              "value": "={{ $('Merge').item.json.customFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "5d4af67b-0219-4be7-87ce-fd8f68ee3c73",
+              "name": "customFieldContent",
+              "value": "Retirado",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2064,
+        80
+      ],
+      "id": "b2d60c3b-d990-4ad7-b35f-d0f757b21512",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Merge').item.json.type }}",
+                    "rightValue": "join",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f26a1c4-066f-4b21-922d-a780c0907ba5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "join"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0590e4c5-696f-4d7a-901d-ca5c0baef740",
+                    "leftValue": "={{ $('Merge').item.json.type }}",
+                    "rightValue": "leave",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "leave"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        0
+      ],
+      "id": "74e83124-c1ac-4677-978d-ab27ebf8f210",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "488334ed-e757-4e62-b8ee-5f4d7e2d0914",
+              "leftValue": "={{ $json.total }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1520,
+        16
+      ],
+      "id": "064370fa-6d69-42e1-bfe1-08005d24e3ff",
+      "name": "If no contact found"
+    },
+    {
+      "parameters": {
+        "errorMessage": "No found"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        256
+      ],
+      "id": "c8e8349b-8732-4864-9526-061fe477a51e",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "be648058-5782-4bf6-8b7d-0072b983d0ce",
+              "leftValue": "={{ $json.groupMetadata.subject }}",
+              "rightValue": "Colombia",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        144
+      ],
+      "id": "900d6812-5143-4433-933d-266d282c9efb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Grupo no es Anuncios Colombia"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        592,
+        288
+      ],
+      "id": "0502da4c-5a24-44e0-ae4f-e666bbd1df97",
+      "name": "Stop and Error1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get contact basic info": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get contact basic info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get the group.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the group.": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Search contact in Highlevel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search contact in Highlevel": {
+      "main": [
+        [
+          {
+            "node": "If no contact found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update Grupo Avisos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Update Grupo Avisos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no contact found": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
