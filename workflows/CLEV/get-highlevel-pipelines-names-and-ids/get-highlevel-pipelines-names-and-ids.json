@@ -1,0 +1,130 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "id, name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        800,
+        -80
+      ],
+      "id": "0cd661f4-424b-4e5d-acf6-4765badeef88",
+      "name": "split Pipeline ids names"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "pipelines",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -80
+      ],
+      "id": "6a7d2476-be4f-4b66-9630-8dbc2bd6fa18",
+      "name": "split pipelines1"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/pipelines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "9rrylZQK1sEASL2L0o3x"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        -80
+      ],
+      "id": "8b9dfbd1-d532-4ebb-8bd8-a08318e03af6",
+      "name": "Get Pipelines1"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "2dc0c68a-10d9-4219-9578-be36ab2c9f8a",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        80,
+        -80
+      ]
+    }
+  ],
+  "connections": {
+    "split pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split Pipeline ids names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
