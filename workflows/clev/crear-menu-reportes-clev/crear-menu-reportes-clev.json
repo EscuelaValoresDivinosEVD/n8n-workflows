@@ -2,7 +2,7 @@
   "nodes": [
     {
       "parameters": {
-        "url": "https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues",
+        "url": "https://services.leadconnectorhq.com/locations/REDACTED/customValues",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -71,7 +71,7 @@
           "parameters": [
             {
               "name": "locationId",
-              "value": "9rrylZQK1sEASL2L0o3x"
+              "value": "REDACTED"
             }
           ]
         },
@@ -332,7 +332,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "=https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues/{{ $('Switch').item.json.id }}",
+        "url": "=https://services.leadconnectorhq.com/locations/REDACTED/customValues/{{ $('Switch').item.json.id }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -405,7 +405,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "=https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues/{{ $('Switch').item.json.id }}",
+        "url": "=https://services.leadconnectorhq.com/locations/REDACTED/customValues/{{ $('Switch').item.json.id }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
