@@ -1,0 +1,305 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "highlevel/update/contact/iniciados",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        -96
+      ],
+      "id": "945ddab5-513c-4836-8cc1-169f4d7762ca",
+      "name": "Webhook",
+      "webhookId": "538c942f-46dd-4e0e-bccc-25ab111ac174",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "psZv93SrO3IkUx5T",
+          "name": "Header Auth n8n.highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "=POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.body.location.id }}\",\n  \"pageLimit\": 10,\n  \"filters\": [\n    {\n       \"field\": \"id\",\n       \"operator\": \"eq\",\n       \"value\": \"{{ $json.body.contact_id }}\"\n    }\n  ]\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10010
+            }
+          },
+          "redirect": {
+            "redirect": {
+              "followRedirects": true,
+              "maxRedirects": 21
+            }
+          },
+          "pagination": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "a8a96426-a77b-4eea-a7f0-1742af7432d2",
+      "name": "Search for a contact id",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "IQy6TekEHKezE5le",
+          "name": "Bearer Auth Iniciados Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "IsF4IohkX1358wkI",
+          "mode": "list",
+          "cachedResultName": "Cache contactos Iniciados SKY",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/IsF4IohkX1358wkI"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contactIdIniciados",
+              "keyValue": "={{ $json.contacts[0].id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "firstName": "={{ $json.contacts[0].firstName }}",
+            "lastName": "={{ $json.contacts[0].lastName }}",
+            "phone": "={{ $json.contacts[0].phone }}",
+            "email": "={{ $json.contacts[0].email }}",
+            "sede": "={{ $json.contacts[0].customFields[2].value }}",
+            "estadoDelIniciado": "={{ $json.contacts[0].customFields[0].value }}",
+            "circulo": "={{ $json.contacts[0].customFields[3].value }}",
+            "grupoSky": "={{ $json.contacts[0].customFields[1].value }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contactIdIniciados",
+              "displayName": "contactIdIniciados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "firstName",
+              "displayName": "firstName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "lastName",
+              "displayName": "lastName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sede",
+              "displayName": "sede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sedeCustomFielIdSede",
+              "displayName": "sedeCustomFielIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estadoDelIniciado",
+              "displayName": "estadoDelIniciado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "estadoDelIniciadoCustomFielIdSede",
+              "displayName": "estadoDelIniciadoCustomFielIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "circulo",
+              "displayName": "circulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "circuloCustomFielIdSede",
+              "displayName": "circuloCustomFielIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "grupoSky",
+              "displayName": "grupoSky",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "grupoSkyCustomFielIdSede",
+              "displayName": "grupoSkyCustomFielIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "locationIdSede",
+              "displayName": "locationIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "contactIdSede",
+              "displayName": "contactIdSede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        -96
+      ],
+      "id": "de4da9bf-3477-4e32-9490-693aa02c3d35",
+      "name": "Update row(s)"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Search for a contact id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for a contact id": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
