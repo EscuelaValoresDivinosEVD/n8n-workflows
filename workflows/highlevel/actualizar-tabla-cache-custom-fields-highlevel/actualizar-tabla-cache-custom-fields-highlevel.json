@@ -1,0 +1,2772 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        1456
+      ],
+      "id": "ededc781-447e-4783-9eaf-dfcebac14bd8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "p5K85zArH4y1XQ61",
+          "mode": "list",
+          "cachedResultName": "HighLevel_Location_IDs",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/p5K85zArH4y1XQ61"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1008,
+        1456
+      ],
+      "id": "bf1efb95-213b-4180-849d-062a4d563737",
+      "name": "Get row(s) tabla LocationIDs"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7ca61424-d473-4068-b6df-b3aef043ac4d",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Global",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Global"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dc8ae2f8-76b4-4859-8783-4db339d2c628",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Iniciados",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Iniciados"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9ae4de57-8040-4af7-8891-29daf50436b6",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Argentina",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Argentina"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "29e2f295-f761-468a-9905-9b17d3a15a25",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Chile",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Chile"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3f895ee1-5dac-4825-a5a4-b8d24a095257",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Colombia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Colombia"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "22543e62-ac17-4ae1-bac6-1ac2684a1a3f",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Costa Rica",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Costa Rica"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "114aa4b4-dd05-49d9-9938-87d5b485b2bc",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Cuenca",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cuenca"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "20004346-c3b0-44d8-9045-f9dcdcd3a3ad",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "España",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "España"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "34028c61-405f-4074-a6ff-7d2728e5617a",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Italia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Italia"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9429bbd4-6ce9-4709-bd39-93334ece723c",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "México",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "México"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b92b7445-0218-4c40-b63b-f989bdc7d1e1",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Online",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Online"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4a2a88e6-1944-4e1d-b938-d5040b503011",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Perú",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Perú"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5dbda082-f3a8-4264-8bbc-585cfd19da27",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Quito",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Quito"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1b442fc3-c21a-4444-911e-a751afbecf53",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Uruguay",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Uruguay"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3dedc742-feb2-4d90-a2a9-e34bf5ab5b1a",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "Venezuela",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Venezuela"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e3e2fa03-48d0-4b6a-a225-887ee8830893",
+                    "leftValue": "={{ $json.sede }}",
+                    "rightValue": "CLEV",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CLEV"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        1232
+      ],
+      "id": "eaf0291c-3e01-4e7f-99b8-a7aa5ca6ffbc",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d8d67615-6ce0-4e27-85db-3e10146b356a",
+      "name": "Get Custom Fields Global",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "O5VIrmRZ8U44X95T",
+          "name": "Bearer Auth Global Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        192
+      ],
+      "id": "e752625f-d740-48a8-82b7-256244de96ff",
+      "name": "Get Custom Fields Iniciados",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "IQy6TekEHKezE5le",
+          "name": "Bearer Auth Iniciados Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        384
+      ],
+      "id": "cd01156e-347c-4bec-9f93-5e03fc86f74f",
+      "name": "Get Custom Fields Argentina",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "buxNC8ku50XFzgM7",
+          "name": "Bearer Auth Argentina Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        576
+      ],
+      "id": "a41519ed-7837-40c9-97a6-d6f86089a01f",
+      "name": "Get Custom Fields Chile",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "sMIB4Sb2W4MzBC2J",
+          "name": "Bearer Auth Chile Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        768
+      ],
+      "id": "febcb18a-ed65-41af-9cd9-147f6ab624ea",
+      "name": "Get Custom Fields Colombia",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "PyXklTRTJY2dAosR",
+          "name": "Bearer Auth Colombia Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        960
+      ],
+      "id": "f1e269c0-268e-4b08-9f3d-42b10c230e0f",
+      "name": "Get Custom Fields Costa Rica",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "F5AOajTCo9EG5COw",
+          "name": "Bearer Auth Costa Rica Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1152
+      ],
+      "id": "1e6de1c5-d627-4433-9635-81403d1ff251",
+      "name": "Get Custom Fields Cuenca",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "P47VMvRcYpWJSNXH",
+          "name": "Bearer Auth Cuenca Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1344
+      ],
+      "id": "62b371b6-0e68-42ef-9683-5e9f5ca98d8a",
+      "name": "Get Custom Fields España",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "a0DW5j5LJGDPDXXn",
+          "name": "Bearer Auth España Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1536
+      ],
+      "id": "3a53894c-58ca-47b8-95fb-bc69999506ff",
+      "name": "Get Custom Fields Italia",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "MO0Qxn2BYYhStBMD",
+          "name": "Bearer Auth Italia Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1728
+      ],
+      "id": "c1d0ff57-32e4-4d11-9d88-aeeaf49d1ffd",
+      "name": "Get Custom Fields México",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "ltwVsPHswYrZeOFR",
+          "name": "Bearer Auth México Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1920
+      ],
+      "id": "24e2294d-4afa-490c-9717-5f71a96f995d",
+      "name": "Get Custom Fields Online",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "ww8M8639TJUuQ7lW",
+          "name": "Bearer Auth Online Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        2112
+      ],
+      "id": "feadb2e8-8c2c-46f1-8f9b-80f80781c6c0",
+      "name": "Get Custom Fields Perú",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "oYaQzJfTFJ22vAib",
+          "name": "Bearer Auth Perú Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        2304
+      ],
+      "id": "f7257a55-b221-4fca-8a4c-e32cb7c10ffd",
+      "name": "Get Custom Fields Quito",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "fgQLqrKHTsgXIR5l",
+          "name": "Bearer Auth Quito Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        2496
+      ],
+      "id": "11eaaa67-1d45-4347-a376-cf4d71525f77",
+      "name": "Get Custom Fields Uruguay",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "h1YF0ou8b82NIm5L",
+          "name": "Bearer Auth Uruguay Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        2688
+      ],
+      "id": "d2588dae-87da-4500-b917-e0f2bdca1eda",
+      "name": "Get Custom Fields Venezuela",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "KdOIB7khZGmkiiio",
+          "name": "Bearer Auth Venezuela Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.locationId }}/customFields",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        2880
+      ],
+      "id": "194fe2a7-5d8a-4dca-92be-2a068174876d",
+      "name": "Get Custom Fields CLEV",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "tvmGpAGQxvZ0c6Ho",
+          "name": "Bearer Auth CLEV Highlevel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        2880
+      ],
+      "id": "a98aad66-524e-422c-81e4-8d7c48122af7",
+      "name": "Edit Fields15"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        2688
+      ],
+      "id": "1ef15492-b5ed-4a31-889e-0b958ff1e6d7",
+      "name": "Edit Fields14"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        2496
+      ],
+      "id": "42168581-a89f-4cb2-8636-3e1d5b6ab10c",
+      "name": "Edit Fields13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        2304
+      ],
+      "id": "0f29290c-5dc6-4114-ba0d-a99c16ac2f0b",
+      "name": "Edit Fields12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        2112
+      ],
+      "id": "dd23e7ac-46f5-4bbf-88eb-787bed33bbf4",
+      "name": "Edit Fields11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        1920
+      ],
+      "id": "8c433612-c0a9-49fa-b83a-2352b63f7059",
+      "name": "Edit Fields10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        1728
+      ],
+      "id": "79a60c40-aef6-46c8-80da-d43abbe05e50",
+      "name": "Edit Fields9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        1536
+      ],
+      "id": "2112cf54-18ee-4168-b3a3-36bdb78da2e3",
+      "name": "Edit Fields8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        1344
+      ],
+      "id": "d1f9ce4f-aef0-4d24-b19c-743b5bb95d3d",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        1152
+      ],
+      "id": "b14fef26-a55b-44ca-9fe6-c4ef115787cc",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        960
+      ],
+      "id": "274bf175-312f-4909-b31f-de863c9fa003",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        768
+      ],
+      "id": "09b00a2a-5aea-4c1d-9468-776730a9f7d8",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        576
+      ],
+      "id": "16cccb5d-5d45-4221-af48-de21558c68df",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        384
+      ],
+      "id": "e8bfecc2-c931-4fbf-add9-16e53fbdb951",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        192
+      ],
+      "id": "b3a97d99-a8a3-4d91-a3f2-fa942401f033",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0dfba915-fa09-448b-b081-c8d5000016aa",
+              "name": "locationName",
+              "value": "={{ $('Switch').item.json.sede }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        0
+      ],
+      "id": "23f008c0-1b5c-4586-8ef3-64386f0f803f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2656,
+        1088
+      ],
+      "id": "d4e83f5b-87bd-4987-aded-4fcbeafd0fae",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1360,
+        1712
+      ],
+      "id": "48b85354-b2a5-4796-a047-9286ed10de38",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1328,
+        896
+      ],
+      "id": "461b67da-f055-45c1-8a78-ac543a34f6bf",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        688,
+        16
+      ],
+      "id": "1aadfd6f-76ac-40b3-88a9-429b14d0ab0b",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        272
+      ],
+      "id": "6d712fd6-4c1c-4d5b-93a3-d996e55d75b6",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        560,
+        496
+      ],
+      "id": "162ad3a5-ff0b-43aa-8c4a-09d50fb2bd66",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        576,
+        688
+      ],
+      "id": "07b1433b-011f-4c55-98a7-5050c15bc28d",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        592,
+        848
+      ],
+      "id": "fa36dcdc-9b2f-40f8-bc36-4815d3970433",
+      "name": "Split Out4"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1040
+      ],
+      "id": "d2b43970-a492-438d-ba88-30aeafba154b",
+      "name": "Split Out5"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1232
+      ],
+      "id": "baa4e9c6-ea78-452a-9aed-702c6f54dfc1",
+      "name": "Split Out6"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1440
+      ],
+      "id": "33ace5c2-5f66-401a-960b-9fd87e35e0bb",
+      "name": "Split Out7"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        1632
+      ],
+      "id": "a169b3dc-9f09-4df1-9f86-df93601effd4",
+      "name": "Split Out8"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1808
+      ],
+      "id": "8f06d0d4-9f49-4104-8cea-06baff6c8249",
+      "name": "Split Out9"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        640,
+        2032
+      ],
+      "id": "55c87a5a-f61c-423c-bdf6-3e6a8d1d92ca",
+      "name": "Split Out10"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        640,
+        2256
+      ],
+      "id": "8746f5cb-b36a-40af-ae08-e70729cfb762",
+      "name": "Split Out11"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        656,
+        2464
+      ],
+      "id": "92fa228b-c758-49b9-a8f7-ee5bfa779c40",
+      "name": "Split Out12"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        672,
+        2688
+      ],
+      "id": "47836fc1-6339-498a-b36e-2e9aa858cf7f",
+      "name": "Split Out13"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        688,
+        2864
+      ],
+      "id": "8badb735-3a34-45d5-ab16-b1ab0aa5f3a8",
+      "name": "Split Out14"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "locationName",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        656,
+        3024
+      ],
+      "id": "e62450a0-375f-4e0b-936d-75dfa8ee8eeb",
+      "name": "Split Out15"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7890eba7-8ea2-4a58-9a8f-153fc72d367a",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1232,
+        1280
+      ],
+      "id": "d2163710-c186-48d7-b24f-af44df22fb34",
+      "name": "Webhook",
+      "webhookId": "7890eba7-8ea2-4a58-9a8f-153fc72d367a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "psZv93SrO3IkUx5T",
+          "name": "Header Auth n8n.highlevel"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        1104
+      ],
+      "id": "a1c71204-5c78-44f3-8972-de26b79d5e23",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d200fc3f-5971-46e9-bac6-af494dfeff8b",
+              "name": "customFieldName",
+              "value": "={{ $json.customFields.name }}",
+              "type": "string"
+            },
+            {
+              "id": "150580b4-46ff-43c6-94ce-6ee299da1493",
+              "name": "customFieldId",
+              "value": "={{ $json.customFields.id }}",
+              "type": "string"
+            },
+            {
+              "id": "44412107-dff3-496e-a45c-e351a2d41a00",
+              "name": "customFieldFieldKey",
+              "value": "={{ $json.customFields.fieldKey }}",
+              "type": "string"
+            },
+            {
+              "id": "5e86cc32-779f-416d-a9c5-c184779e05f0",
+              "name": "sede",
+              "value": "={{ $json.locationName }}",
+              "type": "string"
+            },
+            {
+              "id": "a6db30f8-813f-4b93-b214-533489734bf4",
+              "name": "locationId",
+              "value": "={{ $json.customFields.locationId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2864,
+        1088
+      ],
+      "id": "a2830ec4-90d3-495f-8e43-8eed928371c2",
+      "name": "New fields"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3824,
+        1328
+      ],
+      "id": "668103ba-a04d-4913-be47-75e7f63dbccb",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "dnPzVbYwHPI3hP3B",
+          "mode": "list",
+          "cachedResultName": "CustomFieldsHighLevel",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/dnPzVbYwHPI3hP3B"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sede": "={{ $('New fields').item.json.sede }}",
+            "customFieldName": "={{ $('New fields').item.json.customFieldName }}",
+            "locationId": "={{ $('New fields').item.json.locationId }}",
+            "customFieldKey": "={{ $('New fields').item.json.customFieldId }}",
+            "customFieldId": "={{ $('New fields').item.json.customFieldId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sede",
+              "displayName": "sede",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "locationId",
+              "displayName": "locationId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customFieldName",
+              "displayName": "customFieldName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customFieldId",
+              "displayName": "customFieldId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customFieldKey",
+              "displayName": "customFieldKey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4064,
+        1328
+      ],
+      "id": "16fd9fe8-c8b6-42f8-8710-b294e5e4b9bc",
+      "name": "Escribir filas nuevas"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "dnPzVbYwHPI3hP3B",
+          "mode": "list",
+          "cachedResultName": "CustomFieldsHighLevel",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/dnPzVbYwHPI3hP3B"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3280,
+        1008
+      ],
+      "id": "d2824171-0022-4652-83ec-fa75876134da",
+      "name": "Obtener filas exisitentes",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "dnPzVbYwHPI3hP3B",
+          "mode": "list",
+          "cachedResultName": "CustomFieldsHighLevel",
+          "cachedResultUrl": "/projects/vlBSzSq05eO44SAG/datatables/dnPzVbYwHPI3hP3B"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3488,
+        1024
+      ],
+      "id": "b6e4ebf1-7f14-4a6b-a311-c8d8d3e40d24",
+      "name": "Borrar filas existentes",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) tabla LocationIDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) tabla LocationIDs": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get Custom Fields Global",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Iniciados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Argentina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Chile",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Colombia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Costa Rica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Cuenca",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields España",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Italia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields México",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Online",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Perú",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Quito",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Uruguay",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields Venezuela",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Custom Fields CLEV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Global": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Iniciados": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Argentina": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Chile": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Colombia": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Costa Rica": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Cuenca": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields España": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Italia": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields México": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Online": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Perú": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Quito": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Uruguay": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields Venezuela": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields CLEV": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields15": {
+      "main": [
+        [
+          {
+            "node": "Split Out15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields14": {
+      "main": [
+        [
+          {
+            "node": "Split Out14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields13": {
+      "main": [
+        [
+          {
+            "node": "Split Out13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields12": {
+      "main": [
+        [
+          {
+            "node": "Split Out12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields11": {
+      "main": [
+        [
+          {
+            "node": "Split Out11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields10": {
+      "main": [
+        [
+          {
+            "node": "Split Out10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields9": {
+      "main": [
+        [
+          {
+            "node": "Split Out9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "Split Out8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Split Out7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Split Out6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Split Out5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Split Out4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "New fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Split Out4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Split Out5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Split Out6": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Split Out7": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Split Out8": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Split Out9": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "Split Out10": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out11": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out12": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Split Out13": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Split Out14": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Split Out15": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) tabla LocationIDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) tabla LocationIDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New fields": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Obtener filas exisitentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Escribir filas nuevas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener filas exisitentes": {
+      "main": [
+        [
+          {
+            "node": "Borrar filas existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Borrar filas existentes": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
