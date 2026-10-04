@@ -1,0 +1,612 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1504,
+        80
+      ],
+      "id": "14ba2d66-e0a8-43be-ba80-208d5db703f6",
+      "name": "Get Custom Values",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "for (let i = 0; i < items.length; i++) {\n  items[i].json.index = i + 1;\n}\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        80
+      ],
+      "id": "71bbd824-6cee-49d0-a62b-2bad43eb9ad1",
+      "name": "Add index"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "pipelines",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        384,
+        80
+      ],
+      "id": "450bd9c3-b9b8-441e-a941-208f3f6e3f3f",
+      "name": "split pipelines1"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/pipelines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "9rrylZQK1sEASL2L0o3x"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        80
+      ],
+      "id": "5ef3ca9c-2d49-41e4-98f2-721ccb9743df",
+      "name": "Get Pipelines1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "id, name, dateAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        608,
+        80
+      ],
+      "id": "36216a3a-4130-4441-9e97-d29fe3f9a258",
+      "name": "split Pipeline ids names1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        176
+      ],
+      "id": "a5c01fb5-f3e9-4458-837b-c94b09140548",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "dateAdded",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {
+          "disableDotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        80
+      ],
+      "id": "6518807a-42a0-48f4-aa69-6c9c51aa04c7",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "90d37c24-2b0c-4fbb-8454-dcd82157faf2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "old",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        80
+      ],
+      "id": "8f41a2e8-7602-412b-9d5f-56e8fb750c64",
+      "name": "Descartar OLD"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customValues",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        80
+      ],
+      "id": "34545964-d79a-425f-8884-f974f7642d3e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/clev/create-menu",
+        "authentication": "headerAuth",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "a615fefa-5772-4e71-a268-28a3a1834b47",
+      "name": "Webhook",
+      "webhookId": "70e8483a-5c0d-440e-ad8e-7238ed77b913",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "l03Uxy1XYUmnJuAk",
+          "name": "Header Auth new auto@clev.org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3fe1f307-9bd9-4109-927c-4926832b5a61",
+              "name": "index",
+              "value": "=0,{{ $items(\"Add index\").map(item => item.json.index).flat().join(\",\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2176,
+        -16
+      ],
+      "id": "4c2d1f37-c00d-42a6-a2a6-b8e05548d5d6",
+      "name": "Edit Fields",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fieldKey }}",
+                    "rightValue": "{{ custom_values.numeros_reportes_automaticos }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d5e9663a-85ca-492d-859a-41d0d02021a6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "numeros"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "76b6ad77-040a-45d9-876d-9401b24bc906",
+                    "leftValue": "={{ $json.fieldKey }}",
+                    "rightValue": "{{ custom_values.menu_reportes_automaticos }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "menu"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1952,
+        80
+      ],
+      "id": "ff588cde-4d93-47a0-969d-da906cfa6f8b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues/{{ $('Switch').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=name",
+              "value": "={{ $('Switch').item.json.name }}"
+            },
+            {
+              "name": "value",
+              "value": "={{ $json.index }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        -16
+      ],
+      "id": "2d853da4-2316-4d57-8fee-4ea67105e6f1",
+      "name": "Update custom_values.numeros_reportes_automaticos field"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8eca9bb1-bded-47ae-9abf-94388282ab08",
+              "name": "menu",
+              "value": "=_*(0)*_ Todos _*| {{ $items(\"Add index\").map(item => `(${item.json.index})*_ ${item.json.name}`).join(' _*| ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2176,
+        176
+      ],
+      "id": "c1f00a19-edea-4b3b-be3a-c68ad9810d6a",
+      "name": "Edit Fields1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues/{{ $('Switch').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=name",
+              "value": "={{ $('Switch').item.json.name }}"
+            },
+            {
+              "name": "value",
+              "value": "={{ $json.menu }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        240
+      ],
+      "id": "73baba23-3249-4067-ad08-5cdaa2ecc043",
+      "name": "Update custom_values.menu_reportes_automaticos"
+    }
+  ],
+  "connections": {
+    "Get Custom Values": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add index": {
+      "main": [
+        [
+          {
+            "node": "Get Custom Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split Pipeline ids names1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split Pipeline ids names1": {
+      "main": [
+        [
+          {
+            "node": "Descartar OLD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Add index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descartar OLD": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update custom_values.numeros_reportes_automaticos field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Update custom_values.menu_reportes_automaticos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
