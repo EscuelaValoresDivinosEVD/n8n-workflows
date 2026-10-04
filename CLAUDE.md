@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A documentation and version-control repo for the n8n workflows that run EVD's day-to-day automations. There is no application code, lint, or test tooling here — the content is exported n8n workflow JSON plus documentation generated from it. The commands are `npm run build`, which regenerates the documentation site in `site/` (`build:docs` and `build:api` build one page each), and `npm run serve`, which serves `site/` at http://localhost:3111 (run `npm install` once for the `serve` and `marked` dev dependencies). [brief.md](brief.md) is the source of truth for the project's goals.
+A documentation and version-control repo for the n8n workflows that run EVD's day-to-day automations. There is no application code, lint, or test tooling here — the content is exported n8n workflow JSON plus documentation generated from it. The commands are `npm run build`, which regenerates the documentation site in `site/` (`build:docs` and `build:api` build one page each), and `npm run serve`, which serves `site/` at http://localhost:3111 (run `npm install` once for the `serve` and `marked` dev dependencies).
 
 The workflows run on a self-hosted n8n Community instance at https://auto.evdsky.com/, reachable only over the EVD VPN. Don't assume the instance is reachable from this machine; workflow JSON is exported from n8n and brought into the repo by the user.
 
@@ -42,6 +42,11 @@ Handling the files safely:
 - Mask values when printing files for inspection (`sed -E 's/pit-[A-Za-z0-9-]+/pit-<REDACTED>/g'`); never repeat a token, secret or personal detail in a reply or a doc.
 
 ## Working in n8n through the browser
+
+**Before importing new workflows or updating ones already imported, check two things and tell the person what they need to do. Don't start until both are true.**
+
+1. **Claude in Chrome is installed and connected.** Check that the `mcp__claude-in-chrome__*` tools are available (load them with ToolSearch and call `tabs_context_mcp`). If they are not, stop and tell the person to install the Claude in Chrome extension, sign in to it, and connect it to Claude Code (`/chrome` in a terminal session, or start with `claude --chrome`). Don't fall back to another browser tool.
+2. **The person has logged in to n8n themselves.** Tell them they must log in manually at https://auto.evdsky.com/ (EVD VPN required) with the n8n account for the area being worked on. There are three accounts, one per area: **CLEV**, **Google Workspace** and **HighLevel**. Only one can be logged in at a time, so working on several areas means the person logs out and in between them. If they don't have the logins, they should ask Eduardo Rudas, Rebecca Rondon or Cesar Valderrama for credentials. Never enter n8n credentials yourself; confirm which account is active from the workflow list before importing.
 
 - Use Claude in Chrome (`mcp__claude-in-chrome__*`), not the Chrome DevTools MCP: it needs the user's logged-in n8n session and the EVD VPN.
 - The workflow list depends on which n8n user is logged in. Three logins so far, one per area; each has its own `Notificación de errores`.
