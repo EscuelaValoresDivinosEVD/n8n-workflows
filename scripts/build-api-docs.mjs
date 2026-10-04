@@ -1,36 +1,28 @@
 #!/usr/bin/env node
-// Builds the webhook API docs from the workflow JSON files.
+// Builds the webhook API reference from the workflow JSON files.
 //
-//   node scripts/build-api-docs.mjs      (or: npm run build)
+//   node scripts/build-api-docs.mjs      (or: npm run build:api)
 //
 // Reads every workflows/**/<name>/<name>.json, finds its Webhook nodes and writes:
-//   openapi.yaml  - one OpenAPI spec for every webhook endpoint
-//   index.html    - that spec rendered with Scalar (spec embedded, so the page is one file)
+//   site/api/openapi.yaml  - one OpenAPI spec for every webhook endpoint
+//   site/api/index.html    - that spec rendered with Scalar (spec embedded in the page)
 //
 // What comes from where:
 //   - path, method, auth, response mode, body field names and types: the workflow .json
 //   - workflow name, summary, field descriptions, "Responses" table: the companion .md
 // Both output files are generated. Edit the workflow files or this script, not the outputs.
 
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, join, relative, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const WORKFLOWS_DIR = join(ROOT, 'workflows');
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import {
+  ROOT, API_DIR, SITE_TITLE, titleCase, findWorkflowFiles, workflowRef, docsRoute, webhookEndpoints,
+} from './lib/workflows.mjs';
 
 const API_TITLE = 'EVD n8n Webhooks';
 const API_VERSION = '1.0.0';
 // Port 45333 is what the pinned requests in the n8n exports were sent to. Not re-verified against today's callers.
 const SERVER_URL = 'https://auto.evdsky.com:45333/webhook';
 const SCALAR_CDN = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
-
-// Area folders are lowercase kebab-case; the tag shown in the docs is the folder name in
-// title case unless it is listed here.
-const AREA_TITLES = {
-  clev: 'CLEV',
-  highlevel: 'HighLevel',
-};
 
 // How each n8n header-auth credential is sent. The header name lives inside the credential,
 // which exports do not include, so it is recorded here by credential name. A webhook whose
@@ -58,21 +50,6 @@ const GENERIC_AUTH = {
   id: 'headerAuth',
   scheme: { type: 'apiKey', in: 'header', name: 'Authorization', description: 'n8n header auth. The header name and value are held in the n8n credential named on the endpoint; the header name shown here is a placeholder.' },
 };
-
-// ---------------------------------------------------------------- discovery
-
-// A workflow file is <dir>/<name>/<name>.json, at any depth under workflows/.
-function findWorkflowFiles(dir) {
-  const found = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const sub = join(dir, entry.name);
-    const candidate = join(sub, `${entry.name}.json`);
-    if (existsSync(candidate)) found.push(candidate);
-    else found.push(...findWorkflowFiles(sub));
-  }
-  return found.sort();
-}
 
 // ------------------------------------------------------------ companion .md
 
@@ -180,8 +157,6 @@ function bodySchema(fields, docFields) {
   return root;
 }
 
-const titleCase = (slug) => slug.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
-
 function describeResponse(webhook, nodes) {
   const mode = webhook.parameters.responseMode ?? 'onReceived';
   if (mode === 'responseNode') {
@@ -195,18 +170,17 @@ function describeResponse(webhook, nodes) {
 function buildOperations(jsonFile) {
   const workflow = JSON.parse(readFileSync(jsonFile, 'utf8'));
   const nodes = workflow.nodes ?? [];
-  const webhooks = nodes.filter((n) => n.type === 'n8n-nodes-base.webhook' && !n.disabled);
+  const webhooks = webhookEndpoints(nodes);
   if (!webhooks.length) return [];
 
-  const slug = basename(jsonFile, '.json');
+  const ref = workflowRef(jsonFile);
+  const { slug } = ref;
   const doc = readCompanion(jsonFile);
-  const relDir = relative(WORKFLOWS_DIR, dirname(jsonFile)).split('/');
-  const tag = relDir.length > 1 ? AREA_TITLES[relDir[0]] ?? titleCase(relDir[0]) : 'Workflows';
+  const tag = ref.areaTitle;
   const bodyFields = inferBodyFields(nodes);
 
-  return webhooks.map((webhook, i) => {
-    const method = (webhook.parameters.httpMethod ?? 'GET').toLowerCase();
-    const path = '/' + String(webhook.parameters.path).replace(/^\/+/, '');
+  return webhooks.map(({ node: webhook, method: METHOD, path }, i) => {
+    const method = METHOD.toLowerCase();
     const authCredential = Object.values(webhook.credentials ?? {})[0]?.name;
     const authenticated = (webhook.parameters.authentication ?? 'none') !== 'none';
     const auth = authenticated ? AUTH_SCHEMES[authCredential] ?? GENERIC_AUTH : null;
@@ -214,7 +188,8 @@ function buildOperations(jsonFile) {
     const description = [
       doc.summary,
       doc.responses && `### Responses\n\n${doc.responses}`,
-      `Workflow: \`${doc.title ?? slug}\` — node \`${webhook.name}\`. Source: \`${relative(ROOT, jsonFile)}\`.`,
+      // Relative to site/api/: the workflow's page in the workflow documentation.
+      `[Workflow documentation: ${doc.title ?? slug}](../${docsRoute(ref)}) — node \`${webhook.name}\`.`,
     ].filter(Boolean).join('\n\n');
 
     const operation = {
@@ -249,7 +224,7 @@ function buildOperations(jsonFile) {
 // ------------------------------------------------------------------- spec
 
 function buildSpec() {
-  const operations = findWorkflowFiles(WORKFLOWS_DIR).flatMap(buildOperations);
+  const operations = findWorkflowFiles().flatMap(buildOperations);
   operations.sort((a, b) => a.tag.localeCompare(b.tag) || a.path.localeCompare(b.path));
 
   const paths = {};
@@ -313,15 +288,40 @@ function toHtml(spec) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${API_TITLE}</title>
+    <title>API reference · ${SITE_TITLE}</title>
+    <style>
+      /* Site navigation shared with the workflow documentation. Scalar offsets its sticky
+         sidebar and headings by --scalar-custom-header-height. */
+      :root { --scalar-custom-header-height: 48px; }
+      .site-nav {
+        position: sticky; top: 0; z-index: 1000; height: 48px; box-sizing: border-box;
+        display: flex; align-items: center; gap: 4px; padding: 0 16px;
+        font: 500 14px/1 Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        background: var(--scalar-background-1, #fff); color: var(--scalar-color-1, #1b1b1b);
+        border-bottom: 1px solid var(--scalar-border-color, #e5e5e5);
+      }
+      .site-nav .brand { font-weight: 600; margin-right: 16px; }
+      .site-nav a { color: var(--scalar-color-2, #666); text-decoration: none; padding: 7px 10px; border-radius: 6px; }
+      .site-nav a:hover { color: var(--scalar-color-1, #1b1b1b); background: var(--scalar-background-2, #f6f6f6); }
+      .site-nav a[aria-current] { color: var(--scalar-color-1, #1b1b1b); background: var(--scalar-background-2, #f6f6f6); }
+    </style>
   </head>
   <body>
+    <nav class="site-nav">
+      <span class="brand">${SITE_TITLE}</span>
+      <a href="../">Workflows</a>
+      <a href="./" aria-current="page">API reference</a>
+    </nav>
     <div id="app"></div>
     <script src="${SCALAR_CDN}"></script>
     <script>
       // Internal API: the page is read-only (no "Test Request", which would hit production)
       // and Scalar's hosted extras (share/deploy toolbar, AI chat, MCP) are off.
+      // Follow the light/dark choice made on the workflow documentation page, if there is one.
+      var savedTheme = null;
+      try { savedTheme = localStorage.getItem('theme'); } catch (e) { /* storage unavailable */ }
       Scalar.createApiReference('#app', {
+        ...(savedTheme ? { darkMode: savedTheme === 'dark' } : {}),
         hideTestRequestButton: true,
         hideClientButton: true,
         showDeveloperTools: 'never',
@@ -339,11 +339,9 @@ function toHtml(spec) {
 
 const spec = buildSpec();
 const header = '# Generated by scripts/build-api-docs.mjs. Do not edit by hand; run "npm run build".\n';
-writeFileSync(join(ROOT, 'openapi.yaml'), header + toYaml(spec).replace(/^\n/, ''));
-writeFileSync(join(ROOT, 'index.html'), toHtml(spec));
+mkdirSync(API_DIR, { recursive: true });
+writeFileSync(join(API_DIR, 'openapi.yaml'), header + toYaml(spec).replace(/^\n/, ''));
+writeFileSync(join(API_DIR, 'index.html'), toHtml(spec));
 
 const count = Object.values(spec.paths).reduce((n, p) => n + Object.keys(p).length, 0);
-console.log(`openapi.yaml and index.html written: ${count} endpoint(s)`);
-for (const [path, methods] of Object.entries(spec.paths)) {
-  for (const [method, op] of Object.entries(methods)) console.log(`  ${method.toUpperCase().padEnd(5)} ${path}  (${op.summary})`);
-}
+console.log(`${relative(ROOT, API_DIR)}/: openapi.yaml and index.html written, ${count} endpoint(s)`);

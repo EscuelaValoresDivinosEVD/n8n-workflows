@@ -1,0 +1,60 @@
+/* Styles Tailwind utilities cannot express on generated Markdown and on state toggled by the
+   page script. Inlined into site/index.html by scripts/build-workflow-docs.mjs. */
+
+html { scroll-padding-top: 4.5rem; }
+
+/* Sidebar: active item and the small kind badges, in the spirit of Scalar's method badges. */
+.nav-active { background: rgb(0 0 0 / 0.06); color: #0a0a0a; font-weight: 500; }
+.dark .nav-active { background: rgb(255 255 255 / 0.08); color: #fafafa; }
+
+.kind { font: 600 10px/1 ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace; letter-spacing: 0.04em; text-transform: uppercase; }
+.kind-webhook { color: #059669; }
+.kind-schedule { color: #2563eb; }
+.kind-sub { color: #7c3aed; }
+.kind-error { color: #dc2626; }
+.kind-manual { color: #737373; }
+.dark .kind-webhook { color: #34d399; }
+.dark .kind-schedule { color: #60a5fa; }
+.dark .kind-sub { color: #a78bfa; }
+.dark .kind-error { color: #f87171; }
+.dark .kind-manual { color: #a3a3a3; }
+
+/* Below the lg breakpoint the sidebar is a drawer opened by the menu button. */
+@media (max-width: 1023px) {
+  #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; }
+  .sidebar-open #sidebar { transform: translateX(0); box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.4); }
+}
+
+/* Rendered Markdown. */
+.doc table { display: table; width: 100%; }
+.doc .table-wrap { overflow-x: auto; margin: 1.25em 0; border: 1px solid rgb(0 0 0 / 0.1); border-radius: 0.5rem; }
+.dark .doc .table-wrap { border-color: rgb(255 255 255 / 0.12); }
+.doc .table-wrap table { margin: 0; }
+.doc thead th { background: rgb(0 0 0 / 0.03); padding: 0.6em 0.9em; white-space: nowrap; }
+.dark .doc thead th { background: rgb(255 255 255 / 0.04); }
+.doc tbody td { padding: 0.6em 0.9em; vertical-align: top; }
+.doc h2 { padding-top: 1.5em; margin-top: 2em; border-top: 1px solid rgb(0 0 0 / 0.08); }
+.dark .doc h2 { border-top-color: rgb(255 255 255 / 0.1); }
+.doc a.wf-link { text-decoration: none; }
+.doc a.wf-link code { color: #2563eb; }
+.dark .doc a.wf-link code { color: #60a5fa; }
+.doc a.wf-link:hover code { text-decoration: underline; }
+
+/* The "Draft note" blockquote is the only blockquote the companion docs use. */
+.doc blockquote {
+  font-style: normal; font-weight: 400; quotes: none;
+  border: 1px solid #fcd34d; border-left-width: 4px; border-radius: 0.5rem;
+  background: #fffbeb; color: #78350f; padding: 0.25em 1.1em;
+}
+.doc blockquote p::before, .doc blockquote p::after { content: none; }
+.doc blockquote code, .doc blockquote strong { color: inherit; }
+.dark .doc blockquote { border-color: #92400e; background: rgb(120 53 15 / 0.25); color: #fde68a; }
+
+/* Workflow JSON panel. */
+.json-chevron { transition: transform 0.15s ease; }
+.json-open .json-chevron { transform: rotate(90deg); }
+.json-code { font: 12px/1.6 ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace; tab-size: 2; }
+.j-key { color: #7dd3fc; }
+.j-str { color: #bef264; }
+.j-num { color: #fdba74; }
+.j-lit { color: #f0abfc; }

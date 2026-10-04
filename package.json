@@ -1,13 +1,16 @@
 {
   "name": "n8n-workflows",
   "private": true,
-  "description": "EVD n8n workflows and their generated webhook API docs",
+  "description": "EVD n8n workflows and their generated documentation site",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-api-docs.mjs",
-    "serve": "serve . -l tcp://127.0.0.1:3111"
+    "build": "npm run build:api && npm run build:docs",
+    "build:api": "node scripts/build-api-docs.mjs",
+    "build:docs": "node scripts/build-workflow-docs.mjs",
+    "serve": "serve site -l tcp://127.0.0.1:3111"
   },
   "devDependencies": {
+    "marked": "^18.0.14",
     "serve": "^14.2.6"
   }
 }
