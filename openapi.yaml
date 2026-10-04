@@ -13,6 +13,7 @@ servers:
 tags:
   - name: "CLEV"
   - name: "Google Workspace"
+  - name: "HighLevel"
 paths:
   "/clev/create-menu":
     post:
@@ -356,6 +357,193 @@ paths:
         node: "Webhook"
         responseMode: "lastNode"
         credential: "Header Auth Bearer token n8n.workspace"
+  "/615a78c5-96e9-4c21-b85f-a61fb47adc7e":
+    post:
+      operationId: "test-webhook-events-iniciados"
+      summary: "test webhook events Iniciados"
+      description: |-
+        A single webhook node with nothing connected after it. It looks like a test endpoint for receiving events from the Iniciados HighLevel account: calls are accepted and can be inspected in n8n's execution log, but nothing is done with them.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Any call with valid auth | n8n's immediate "workflow started" response. |
+
+        Workflow: `test webhook events Iniciados` — node `Webhook`. Source: `workflows/highlevel/test-webhook-events-iniciados/test-webhook-events-iniciados.json`.
+      tags:
+        - "HighLevel"
+      security:
+        - highlevelBearer: []
+      responses:
+        "200":
+          description: "Sent immediately, before the workflow runs. The body only confirms that the workflow was started."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/highlevel/test-webhook-events-iniciados/test-webhook-events-iniciados.json"
+        node: "Webhook"
+        responseMode: "onReceived"
+        credential: "Header Auth n8n.highlevel"
+  "/694daab8-7fcb-487e-b550-e93ffbdda182":
+    post:
+      operationId: "copia-contacto-crm-a-telefono"
+      summary: "Copia contacto CRM a teléfono"
+      description: |-
+        A single webhook node with nothing connected after it. The name says it should copy a CRM contact to a phone, but no such logic exists: the endpoint accepts a call and does nothing.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Any call with valid auth | n8n's immediate "workflow started" response. |
+
+        Workflow: `Copia contacto CRM a teléfono` — node `Webhook`. Source: `workflows/highlevel/copia-contacto-crm-a-telefono/copia-contacto-crm-a-telefono.json`.
+      tags:
+        - "HighLevel"
+      security:
+        - highlevelBearer: []
+      responses:
+        "200":
+          description: "Sent immediately, before the workflow runs. The body only confirms that the workflow was started."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/highlevel/copia-contacto-crm-a-telefono/copia-contacto-crm-a-telefono.json"
+        node: "Webhook"
+        responseMode: "onReceived"
+        credential: "Header Auth account"
+  "/highlevel/update/contact/iniciados":
+    post:
+      operationId: "actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi"
+      summary: "Actualizar tabla cache iniciados - iniciado actualizado desde PI"
+      description: |-
+        Refreshes one person's row in the n8n data table `Cache contactos Iniciados SKY` when their contact changes in the Iniciados HighLevel account. HighLevel calls the webhook, the workflow reads the contact back from HighLevel and overwrites the cached row.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Row updated | The updated data table row. |
+        | HighLevel search fails | n8n's error response; the failure is also emailed by `Notificación de errores`. |
+
+        Workflow: `Actualizar tabla cache iniciados - iniciado actualizado desde PI` — node `Webhook`. Source: `workflows/highlevel/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi.json`.
+      tags:
+        - "HighLevel"
+      security:
+        - highlevelBearer: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: "object"
+              properties:
+                location:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "string"
+                      description: "HighLevel location id of the account the contact belongs to."
+                  required:
+                    - "id"
+                contact_id:
+                  type: "string"
+                  description: "Id of the contact that changed, in the Iniciados HighLevel account."
+              required:
+                - "location"
+                - "contact_id"
+      responses:
+        "200":
+          description: "The output of the last node the workflow executed, returned once the workflow has finished."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/highlevel/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi/actualizar-tabla-cache-iniciados-iniciado-actualizado-desde-pi.json"
+        node: "Webhook"
+        responseMode: "lastNode"
+        credential: "Header Auth n8n.highlevel"
+  "/waha/participants":
+    post:
+      operationId: "actualizar-campo-comunidad-whatsapp-auto-col"
+      summary: "Actualizar campo Comunidad WhatsApp auto COL"
+      description: |-
+        Keeps a HighLevel contact field in step with membership of the Colombia WhatsApp announcements group. When someone joins or leaves the group, it finds the matching contact in the Colombia HighLevel account by phone number and sets the "Grupo de avisos WhatsApp" custom field to `Ingresado` or `Retirado`.
+
+        ### Responses
+
+        | Situation | What the caller gets |
+        |---|---|
+        | Field updated | The HighLevel response to the contact update. |
+        | Event is not a join or leave | n8n's default response; the workflow ends at `If`. |
+        | Group is not a Colombia group, or no contact has that phone | n8n's error response, because a `Stop and Error` node fails the execution. |
+
+        Workflow: `Actualizar campo Comunidad WhatsApp auto COL` — node `Webhook`. Source: `workflows/highlevel/actualizar-campo-comunidad-whatsapp-auto-col/actualizar-campo-comunidad-whatsapp-auto-col.json`.
+      tags:
+        - "HighLevel"
+      security:
+        - highlevelBearer: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: "object"
+              properties:
+                session:
+                  type: "string"
+                  description: "WAHA session name, used for the two lookups back into WAHA."
+                payload:
+                  type: "object"
+                  properties:
+                    participants:
+                      type: "array"
+                      items: {}
+                      description: "Participants affected by the event. Only the first entry's `id` is used."
+                    type:
+                      type: "string"
+                      description: "Event type. Only values containing `join` or `leave` are processed."
+                    group:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "string"
+                          description: "WhatsApp id of the group the event happened in."
+                      required:
+                        - "id"
+                  required:
+                    - "participants"
+                    - "type"
+                    - "group"
+              required:
+                - "session"
+                - "payload"
+      responses:
+        "200":
+          description: "The output of the last node the workflow executed, returned once the workflow has finished."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+        "403":
+          description: "The authentication header is missing or wrong."
+      x-n8n:
+        workflowFile: "workflows/highlevel/actualizar-campo-comunidad-whatsapp-auto-col/actualizar-campo-comunidad-whatsapp-auto-col.json"
+        node: "Webhook"
+        responseMode: "lastNode"
+        credential: "Header Auth n8n.highlevel"
 components:
   securitySchemes:
     clevWebhookAuth:
@@ -368,6 +556,10 @@ components:
       in: "header"
       name: "Authorization"
       description: "n8n header auth. The header name and value are held in the n8n credential named on the endpoint; the header name shown here is a placeholder."
+    highlevelBearer:
+      type: "http"
+      scheme: "bearer"
+      description: "Send `Authorization: Bearer <token>`. n8n credential: `Header Auth n8n.highlevel`."
     workspaceBearer:
       type: "http"
       scheme: "bearer"

@@ -29,6 +29,7 @@ const SCALAR_CDN = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
 // title case unless it is listed here.
 const AREA_TITLES = {
   clev: 'CLEV',
+  highlevel: 'HighLevel',
 };
 
 // How each n8n header-auth credential is sent. The header name lives inside the credential,
@@ -38,6 +39,15 @@ const AUTH_SCHEMES = {
   'Header Auth Bearer token n8n.workspace': {
     id: 'workspaceBearer',
     scheme: { type: 'http', scheme: 'bearer', description: 'Send `Authorization: Bearer <token>`. n8n credential: `Header Auth Bearer token n8n.workspace`.' },
+  },
+  'Header Auth n8n.highlevel': {
+    id: 'highlevelBearer',
+    scheme: { type: 'http', scheme: 'bearer', description: 'Send `Authorization: Bearer <token>`. n8n credential: `Header Auth n8n.highlevel`.' },
+  },
+  // Same credential (same n8n ID) under its earlier name, still shown on one node.
+  'Header Auth account': {
+    id: 'highlevelBearer',
+    scheme: { type: 'http', scheme: 'bearer', description: 'Send `Authorization: Bearer <token>`. n8n credential: `Header Auth n8n.highlevel`.' },
   },
   'Header Auth new auto@clev.org': {
     id: 'clevWebhookAuth',
@@ -118,19 +128,21 @@ function* walkStrings(value, condition = null) {
 // Body fields are not declared anywhere: collect every `body.<field>` the workflow reads,
 // keyed by dotted path (`correo`, `customData.selection`). A trailing method call such as
 // `body.correo.split(` is not part of the path. A field compared with a boolean operator is
-// documented as boolean, anything else as string.
+// documented as boolean, one that is indexed (`body.payload.participants[0]`) as an array,
+// anything else as string.
 function inferBodyFields(nodes) {
   const fields = new Map();
   for (const node of nodes) {
     if (node.type === 'n8n-nodes-base.stickyNote') continue;
     for (const { text, condition } of walkStrings(node.parameters)) {
-      for (const m of text.matchAll(/\bbody((?:\.[A-Za-z_]\w*)+)(\()?/g)) {
+      for (const m of text.matchAll(/\bbody((?:\.[A-Za-z_]\w*)+)(\(|\[)?/g)) {
         const segments = m[1].slice(1).split('.');
-        if (m[2]) segments.pop();
+        if (m[2] === '(') segments.pop();
         if (!segments.length) continue;
         const path = segments.join('.');
         const isBoolean = condition?.operator?.type === 'boolean' && condition.leftValue === text;
-        if (!fields.has(path) || isBoolean) fields.set(path, isBoolean ? 'boolean' : 'string');
+        const type = isBoolean ? 'boolean' : m[2] === '[' ? 'array' : 'string';
+        if (!fields.has(path) || type !== 'string') fields.set(path, type);
       }
     }
   }
@@ -148,7 +160,7 @@ function bodySchema(fields, docFields) {
       const leaf = i === segments.length - 1;
       const existing = node.properties[segment];
       if (leaf) {
-        if (existing?.type !== 'object') node.properties[segment] = { type };
+        if (existing?.type !== 'object') node.properties[segment] = type === 'array' ? { type, items: {} } : { type };
         const doc = docFields[path];
         if (doc?.description) node.properties[segment].description = doc.description;
         if (doc?.required) {
