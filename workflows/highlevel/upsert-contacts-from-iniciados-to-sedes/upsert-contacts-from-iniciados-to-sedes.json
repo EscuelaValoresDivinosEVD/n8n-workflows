@@ -701,7 +701,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"firstName\": \"{{ $json.firstName }}\",\n  \"lastName\": \"{{ $json.lastName }}\",\n  \"email\": \"{{ $json.email }}\",\n  \"locationId\": \"NbtZ4y2L21I4wFGw8NTs\",\n  \"customFields\": [\n    {\n      \"id\": \"81svK1GMXnsK1ylAdzNU\",\n      \"field_value\": \"{{ $json.estadoDelIniciado }}\"\n    },\n    {\n      \"id\": \"TIPvi2VmaGCrzd33vtvO\",\n      \"field_value\": \"{{ $json.circulo }}\"\n    },\n    {\n      \"id\": \"FmNjY9hVLbyyzTAQHEmB\",\n      \"field_value\": \"{{ $json.grupoSky }}\"\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"firstName\": \"{{ $json.firstName }}\",\n  \"lastName\": \"{{ $json.lastName }}\",\n  \"email\": \"{{ $json.email }}\",\n  \"locationId\": \"REDACTED\",\n  \"customFields\": [\n    {\n      \"id\": \"81svK1GMXnsK1ylAdzNU\",\n      \"field_value\": \"{{ $json.estadoDelIniciado }}\"\n    },\n    {\n      \"id\": \"TIPvi2VmaGCrzd33vtvO\",\n      \"field_value\": \"{{ $json.circulo }}\"\n    },\n    {\n      \"id\": \"FmNjY9hVLbyyzTAQHEmB\",\n      \"field_value\": \"{{ $json.grupoSky }}\"\n    }\n  ]\n}",
         "options": {
           "batching": {
             "batch": {
