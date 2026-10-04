@@ -17,11 +17,13 @@ A straight-from-n8n download can be parked in `raw/` or named `*.raw.json`; [.gi
 
 3. **Check whether the editor is showing unpublished changes.** A canvas copy takes whatever the editor shows, which is the draft. If the workflow header shows a "Publish" button with a yellow dot (instead of a published state), the imported JSON may differ from the version that is actually running. Import it anyway, tell the user, and add a note saying so near the top of the companion `.md`. **Always document the live (published) version, not the draft**: where the two differ (webhook path, method, messages, behaviour), the companion `.md` and the OpenAPI spec describe what is published, and the draft's differences are listed only in that note. When the draft's nodes or connections really differ, the JSON in the repo should also be the published version: read `activeVersion.nodes` / `activeVersion.connections` from `GET /rest/workflows/<id>` in the logged-in browser tab (compare `versionId` with `activeVersionId` to detect a draft). Large values cannot be copied out of the page through the clipboard, so patch the draft locally and confirm it with a SHA-256 of the sorted-key JSON computed on both sides.
 
-When copying the canvas: clear the clipboard first (`pbcopy </dev/null`) and check the saved file is non-empty and has the expected node count, because a failed copy leaves the clipboard empty (it happens when Chrome is not the focused window). If the copy keeps failing, read the workflow from `GET /rest/workflows/<id>` instead and confirm it with the SHA-256 check described above.
+**Preferred way to get the JSON out of n8n (used for the `highlevel` batch):** in the logged-in tab, fetch each workflow from `GET /rest/workflows/<id>` with JavaScript, build one bundle of `activeVersion.nodes` / `activeVersion.connections` (the published version) plus `pinData`, `meta`, name, settings and a SHA-256 per workflow, put it on the clipboard through a one-off `copy` event listener (`e.clipboardData.setData`) triggered by pressing Cmd+C on the page, then `pbpaste` it, split it locally and check every hash. One copy covers the whole list, it always yields the published version, and it avoids the canvas copy's failures. The API copy has no `meta.instanceId`; add it so the files match canvas exports.
+
+When copying the canvas instead: clear the clipboard first (`pbcopy </dev/null`) and check the saved file is non-empty and has the expected node count, because a failed copy leaves the clipboard empty (it happens when Chrome is not the focused window). If the copy keeps failing, read the workflow from `GET /rest/workflows/<id>` instead and confirm it with the SHA-256 check described above.
 
 Already decided by the user (2026-10-03), don't ask again — but still list what was found and what was done:
 
-- **Stay in the cleaned JSON:** `meta.instanceId`, service-account and sender/recipient addresses (`n8n.workspace@evdsky.com`, `auto@clev.org`, `servidores@evdsky.com`), data table / project IDs, `webhookId`s, the HighLevel location ID, Basecamp bucket and message board IDs, and the internal server IP in the CLEV error notifier's email template.
+- **Stay in the cleaned JSON:** `meta.instanceId`, service-account and sender/recipient addresses (`n8n.workspace@evdsky.com`, `auto@clev.org`, `n8n@evdsky.com`, `servidores@evdsky.com`), data table / project IDs, `webhookId`s, the HighLevel location ID, Basecamp bucket and message board IDs, and the internal server IP in the CLEV error notifier's email template.
 - **Hard-coded tokens are removed:** replace the value with a named placeholder, e.g. `Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN`, and say in the companion `.md` that the repo copy holds a placeholder.
 - **Sample payloads in sticky notes:** replace personal data and secrets (names, emails, phones, dates of birth, contact IDs, IPs, auth header values, trace IDs) with `<redacted>` and leave the rest of the note intact.
 
@@ -33,7 +35,7 @@ Grep the cleaned files afterwards (`pit-`, `Bearer `, email addresses, IPs) to c
 
 ## Target layout
 
-Workflows are grouped by area under `workflows/` (currently `google-workspace` and `clev`). **Area folder names are always lowercase kebab-case**. Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
+Workflows are grouped by area under `workflows/` (currently `google-workspace`, `clev` and `highlevel`). **Area folder names are always lowercase kebab-case**. Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
 
 ```
 workflows/
@@ -43,7 +45,7 @@ workflows/
       <workflow-name>.md     # companion documentation
 ```
 
-**Moving a workflow into its area folder is a manual step the user does themselves.** Import new workflows into `workflows/<workflow-name>/` and, once the import session is finished, **remind the user to move them into the right area folder — they asked for this reminder and called it very important.** Don't move them yourself. Run `npm run build` again after the move, since the area folder becomes the endpoint's tag.
+**Moving a workflow into its area folder is a manual step the user does themselves, unless they name the area folder when asking for the import** — then import straight into `workflows/<area>/`. Otherwise import new workflows into `workflows/<workflow-name>/` and, once the import session is finished, **remind the user to move them into the right area folder — they asked for this reminder and called it very important.** Don't move them yourself. Run `npm run build` again after the move, since the area folder becomes the endpoint's tag.
 
 The companion `.md` covers: what the workflow does from start to finish, what triggers it, which credentials it uses, any "tricky" nodes and why they are tricky, and who uses it.
 
@@ -77,7 +79,7 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 
 ## Current state
 
-The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/clev/`. `openapi.yaml` and `index.html` are generated and cover every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
+The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A third batch of ten (the HighLevel workflows, a third n8n login) went into `workflows/highlevel/`. A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/clev/`. `openapi.yaml` and `index.html` are generated and cover every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
 
 [n8n-workflow-sample.json](n8n-workflow-sample.json) at the root is **a reference sample, not a tracked workflow**: it is gitignored (its pinned request carries a real `Authorization` header), deliberately left with its `pinData` intact and needs no folder, kebab-case rename, or companion `.md`. Use it to see the shape of a real export. The import rules above apply to actual workflows brought in, not to this file.
 
