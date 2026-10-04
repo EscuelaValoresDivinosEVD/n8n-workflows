@@ -17,13 +17,23 @@ A straight-from-n8n download can be parked in `raw/` or named `*.raw.json`; [.gi
 
 3. **Check whether the editor is showing unpublished changes.** A canvas copy takes whatever the editor shows, which is the draft. If the workflow header shows a "Publish" button with a yellow dot (instead of a published state), the imported JSON may differ from the version that is actually running. Import it anyway, tell the user, and add a note saying so near the top of the companion `.md`. **Always document the live (published) version, not the draft**: where the two differ (webhook path, method, messages, behaviour), the companion `.md` and the OpenAPI spec describe what is published, and the draft's differences are listed only in that note. When the draft's nodes or connections really differ, the JSON in the repo should also be the published version: read `activeVersion.nodes` / `activeVersion.connections` from `GET /rest/workflows/<id>` in the logged-in browser tab (compare `versionId` with `activeVersionId` to detect a draft). Large values cannot be copied out of the page through the clipboard, so patch the draft locally and confirm it with a SHA-256 of the sorted-key JSON computed on both sides.
 
-Already decided, don't ask again: `meta.instanceId`, the service-account address inside credential display names, data table / project IDs, and `webhookId`s all stay in the cleaned JSON.
+When copying the canvas: clear the clipboard first (`pbcopy </dev/null`) and check the saved file is non-empty and has the expected node count, because a failed copy leaves the clipboard empty (it happens when Chrome is not the focused window). If the copy keeps failing, read the workflow from `GET /rest/workflows/<id>` instead and confirm it with the SHA-256 check described above.
+
+Already decided by the user (2026-10-03), don't ask again — but still list what was found and what was done:
+
+- **Stay in the cleaned JSON:** `meta.instanceId`, service-account and sender/recipient addresses (`n8n.workspace@evdsky.com`, `auto@clev.org`, `servidores@evdsky.com`), data table / project IDs, `webhookId`s, the HighLevel location ID, Basecamp bucket and message board IDs, and the internal server IP in the CLEV error notifier's email template.
+- **Hard-coded tokens are removed:** replace the value with a named placeholder, e.g. `Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN`, and say in the companion `.md` that the repo copy holds a placeholder.
+- **Sample payloads in sticky notes:** replace personal data and secrets (names, emails, phones, dates of birth, contact IDs, IPs, auth header values, trace IDs) with `<redacted>` and leave the rest of the note intact.
+
+- **`Webhook test` (CLEV) stays** in the repo and in the API docs, even though it looks like a leftover experiment.
+
+Grep the cleaned files afterwards (`pit-`, `Bearer `, email addresses, IPs) to confirm nothing was missed; the raw copies in `raw/` keep the originals.
 
 `credentials` blocks on nodes hold only an n8n credential ID and display name (no secrets); they are needed to document which credentials a workflow uses.
 
 ## Target layout
 
-Workflows are grouped by area under `workflows/` (currently only `google-workspace`). Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
+Workflows are grouped by area under `workflows/` (currently `google-workspace` and `CLEV`). Each workflow gets its own folder named after the workflow, containing two files that share the workflow's n8n name in kebab-case:
 
 ```
 workflows/
@@ -54,7 +64,9 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 - The server URL is `https://auto.evdsky.com:45333/webhook`. Port 45333 comes from the pinned requests in the exports; the user chose to keep it until they can verify which address the calling services use today.
 - The page is deliberately read-only: the user asked for Scalar's "Test Request" button (it would hit production), "Ask AI" and "Generate MCP" to be hidden. The API client button and share/deploy toolbar are hidden for the same reason. Keep them off; the options are set in the script's HTML template.
 - The spec is embedded in `index.html`, so the page is a single file; Scalar itself loads from the jsDelivr CDN.
-- To preview: `python3 -m http.server` in the repo root, then open `index.html`.
+- To preview: the user keeps `index.html` served at http://localhost:3000 — use that, don't start another server. **If localhost:3000 is not running, remind the user to start it** (check with `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/`).
+- Auth: the header name of an n8n header-auth credential is not in the export, so the script has an `AUTH_SCHEMES` map keyed by credential name (Workspace = `Authorization: Bearer`, CLEV = `webhook-auth` header). Add an entry when a new webhook credential shows up; unknown credentials fall back to a generic placeholder scheme.
+- Nested body fields are written as dotted paths in the `### Request body` table (e.g. `customData.selection`) and become nested objects in the spec.
 
 ## Committing
 
@@ -65,7 +77,7 @@ Both files live at the repo root and are **generated — never edit `openapi.yam
 
 ## Current state
 
-The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). `openapi.yaml` and `index.html` are generated and cover the five webhook endpoints. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
+The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/CLEV/`. `openapi.yaml` and `index.html` are generated and cover every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
 
 [n8n-workflow-sample.json](n8n-workflow-sample.json) at the root is **a reference sample, not a tracked workflow**: it is gitignored (its pinned request carries a real `Authorization` header), deliberately left with its `pinData` intact and needs no folder, kebab-case rename, or companion `.md`. Use it to see the shape of a real export. The import rules above apply to actual workflows brought in, not to this file.
 
