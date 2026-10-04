@@ -1,0 +1,57 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "18d6c765-2676-4ca4-b131-a6c2f688af3b",
+      "name": "Webhook",
+      "webhookId": "da492177-2d7b-4da2-85c2-bf22e89a2946",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MSFyaEGhJz40Ri79",
+          "name": "TEst"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "47a79cf1-d7e6-48b7-a15c-5acf4f193367",
+      "name": "Wait",
+      "webhookId": "33fd39c6-6512-4841-9068-0aaf081527cb"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
