@@ -1,0 +1,57 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e7ec4692-535d-4b79-8744-b11a2c305a01",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@evdsky.com",
+        "toEmail": "servidores@evdsky.com",
+        "subject": "=Error en workflow n8n.highlevel: {{ $json.workflow.name }}",
+        "emailFormat": "text",
+        "text": "=Workflow: {{ $json.workflow.name }}\nWorkflow URL: {{ $json.execution.url.replace(\"https://auto.evdsky.com\", \"https://172.17.7.4\")  }}\nNota: Debe estar conectado a la VPN para acceder al URL.\nLast Node Executed: {{ $json.execution.lastNodeExecuted }}\nMode: {{ $json.execution.mode }}\nExecution id: {{ $json.execution.id }}\nError:\n{{ $json.execution.error.message }}\nStacktrace:\n{{ $json.execution.error.stack }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "dace6bbd-8377-46fa-a73f-7d277778b4d1",
+      "name": "Send email",
+      "webhookId": "760c0b58-f732-4cef-b249-28b5158db53a",
+      "credentials": {
+        "smtp": {
+          "id": "SQxav0N7jHb6SzMH",
+          "name": "SMTP account 3"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
