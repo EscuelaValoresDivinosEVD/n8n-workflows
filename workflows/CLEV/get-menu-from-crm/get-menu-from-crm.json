@@ -1,0 +1,170 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -768,
+        16
+      ],
+      "id": "c6882f56-8d49-43f6-b2c5-632ffd5b9a88",
+      "name": "Get Custom Values",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customValues",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        16
+      ],
+      "id": "5eda9307-9ce0-4bd3-9018-49275c23812e",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1609ba24-5e29-48fb-ac36-9fc456b77c8d",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "{{ custom_values.menu_reportes_automaticos }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        16
+      ],
+      "id": "62f11f98-3fe6-4ebf-9e7a-f72c4b5df8cc",
+      "name": "seleccionar campo con menú en el CRM"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "body_customData_selection_toNumber",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "9a77eee2-b7ce-44b0-b761-8dd2ac197a3e",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -976,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node - parse formatted \"value\" string into one item per row\n// Input field: items[x].json.value\n// Output: array of items [{ json: { index: <Number>, name: \"<string>\" } }, ...]\n\nconst output = [];\n\nfor (const it of items) {\n  const value = (it.json && it.json.value) ? String(it.json.value) : '';\n  if (!value) continue;\n\n  // find all occurrences of \"(number)\" and record their positions\n  const idxRegex = /\\(\\s*(\\d+)\\s*\\)/g;\n  const matches = [];\n  let m;\n  while ((m = idxRegex.exec(value)) !== null) {\n    matches.push({ index: parseInt(m[1], 10), start: m.index, end: idxRegex.lastIndex });\n  }\n\n  // if no markers found, skip this input item\n  if (matches.length === 0) continue;\n\n  // build rows: text after each marker until the next marker (or end of string)\n  for (let i = 0; i < matches.length; i++) {\n    const cur = matches[i];\n    const next = matches[i + 1];\n    let nameChunk = value.slice(cur.end, next ? next.start : value.length);\n\n    // remove leading/trailing separators (spaces, tabs, underscores, asterisks, pipes)\n    const name = nameChunk.replace(/^[\\s_*|]+/, '').replace(/[\\s_*|]+$/, '');\n\n    output.push({\n      json: {\n        index: cur.index,\n        name: name\n      }\n    });\n  }\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aece9a73-6a22-4c30-a396-86b1690e0683",
+      "name": "Generate table Indexes and pipelines names"
+    }
+  ],
+  "connections": {
+    "Get Custom Values": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "seleccionar campo con menú en el CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "seleccionar campo con menú en el CRM": {
+      "main": [
+        [
+          {
+            "node": "Generate table Indexes and pipelines names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Custom Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
