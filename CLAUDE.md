@@ -15,7 +15,7 @@ The workflows run on a self-hosted n8n Community instance at https://auto.evdsky
 
 A straight-from-n8n download can be parked in `raw/` or named `*.raw.json`; [.gitignore](.gitignore) excludes both, so an export with its `pinData` intact cannot be committed by accident. The cleaned copy goes in the workflow's folder under its kebab-case name.
 
-3. **Check whether the editor is showing unpublished changes.** A canvas copy takes whatever the editor shows, which is the draft. If the workflow header shows a "Publish" button with a yellow dot (instead of a published state), the imported JSON may differ from the version that is actually running. Import it anyway, tell the user, and add a note saying so near the top of the companion `.md`. **Always document the live (published) version, not the draft**: where the two differ (webhook path, method, messages, behaviour), the companion `.md` and the OpenAPI spec describe what is published, and the draft's differences are listed only in that note. When the draft's nodes or connections really differ, the JSON in the repo should also be the published version: read `activeVersion.nodes` / `activeVersion.connections` from `GET /rest/workflows/<id>` in the logged-in browser tab (compare `versionId` with `activeVersionId` to detect a draft). Large values cannot be copied out of the page through the clipboard, so patch the draft locally and confirm it with a SHA-256 of the sorted-key JSON computed on both sides.
+3. **Check whether the editor is showing unpublished changes.** A canvas copy takes whatever the editor shows, which is the draft. If the workflow header shows a "Publish" button with a yellow dot (instead of a published state), the imported JSON may differ from the version that is actually running. Import it anyway, tell the user, and add a note saying so near the top of the companion `.md`. **Always document the live (published) version, not the draft**: where the two differ (webhook path, method, messages, behaviour), the companion `.md` and the OpenAPI spec describe what is published, and the draft's differences are listed only in that note. When the draft's nodes or connections really differ, the JSON in the repo should also be the published version: read `activeVersion.nodes` / `activeVersion.connections` from `GET /rest/workflows/<id>` in the logged-in browser tab (compare `versionId` with `activeVersionId` to detect a draft). Use the bundle method below to bring the published version out, and confirm it with a SHA-256 of the sorted-key JSON computed on both sides.
 
 **Preferred way to get the JSON out of n8n (used for the `highlevel` batch):** in the logged-in tab, fetch each workflow from `GET /rest/workflows/<id>` with JavaScript, build one bundle of `activeVersion.nodes` / `activeVersion.connections` (the published version) plus `pinData`, `meta`, name, settings and a SHA-256 per workflow, put it on the clipboard through a one-off `copy` event listener (`e.clipboardData.setData`) triggered by pressing Cmd+C on the page, then `pbpaste` it, split it locally and check every hash. One copy covers the whole list, it always yields the published version, and it avoids the canvas copy's failures. The API copy has no `meta.instanceId`; add it so the files match canvas exports.
 
@@ -23,7 +23,8 @@ When copying the canvas instead: clear the clipboard first (`pbcopy </dev/null`)
 
 Already decided by the user (2026-10-03), don't ask again — but still list what was found and what was done:
 
-- **Stay in the cleaned JSON:** `meta.instanceId`, service-account and sender/recipient addresses (`n8n.workspace@evdsky.com`, `auto@clev.org`, `n8n@evdsky.com`, `servidores@evdsky.com`), data table / project IDs, `webhookId`s, the HighLevel location ID, Basecamp bucket and message board IDs, and the internal server IP in the CLEV error notifier's email template.
+- **Stay in the cleaned JSON:** `meta.instanceId`, service-account and sender/recipient addresses (`n8n.workspace@evdsky.com`, `auto@clev.org`, `n8n@evdsky.com`, `servidores@evdsky.com`), data table / project IDs, `webhookId`s, HighLevel custom-field IDs, Basecamp bucket and message board IDs, and the internal server IP in the CLEV error notifier's email template.
+- **HighLevel location IDs are removed** (decided 2026-10-04, reversing the earlier "keep"): replace a hard-coded location ID with `REDACTED` wherever it appears — URLs, query and body parameters, sticky notes. Check with `grep -rnoE 'locations/[A-Za-z0-9]{20}\b|locationId[^,}]{0,16}[A-Za-z0-9]{20}\b' workflows` (must print nothing); expressions such as `{{ $json.locationId }}` stay.
 - **Hard-coded tokens are removed:** replace the value with a named placeholder, e.g. `Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN`, and say in the companion `.md` that the repo copy holds a placeholder.
 - **Sample payloads in sticky notes:** replace personal data and secrets (names, emails, phones, dates of birth, contact IDs, IPs, auth header values, trace IDs) with `<redacted>` and leave the rest of the note intact.
 
@@ -32,6 +33,23 @@ Already decided by the user (2026-10-03), don't ask again — but still list wha
 Grep the cleaned files afterwards (`pit-`, `Bearer `, email addresses, IPs) to confirm nothing was missed; the raw copies in `raw/` keep the originals.
 
 `credentials` blocks on nodes hold only an n8n credential ID and display name (no secrets); they are needed to document which credentials a workflow uses.
+
+Handling the files safely:
+
+- Never write clipboard or transformed output straight onto a workflow file: write to a temp file, check it is non-empty valid JSON with the expected node count, then move it into place.
+- Secret check before every commit, ignoring our own placeholder — it must print nothing:
+  `grep -rhoE 'pit-[0-9a-f]{8}-|Bearer [A-Za-z0-9._-]{20,}|eyJ[A-Za-z0-9_-]{20,}|"pinData"' workflows/ site/ | grep -v 'Bearer REDACTED_'`
+- Mask values when printing files for inspection (`sed -E 's/pit-[A-Za-z0-9-]+/pit-<REDACTED>/g'`); never repeat a token, secret or personal detail in a reply or a doc.
+
+## Working in n8n through the browser
+
+- Use Claude in Chrome (`mcp__claude-in-chrome__*`), not the Chrome DevTools MCP: it needs the user's logged-in n8n session and the EVD VPN.
+- The workflow list depends on which n8n user is logged in. Three logins so far, one per area; each has its own `Notificación de errores`.
+- n8n REST calls from the page need the header `browser-id: localStorage.getItem('n8n-browserId')`. List published workflows with `/rest/workflows?filter={"active":true}&take=100`.
+- Settings such as `errorWorkflow`, folder and project exist only in the API response, not in an export.
+- `javascript_tool` output is cut at about 1 KB: return compact strings, never whole workflows.
+- Getting text out of the page: only a `copy` event listener plus a real Cmd+C works. `navigator.clipboard.writeText` hangs and a select-and-copy on a textarea returns empty.
+- Read-only in n8n: never click Publish, Save or Execute, and don't type on a canvas beyond Cmd+A / Cmd+C.
 
 ## Target layout
 
@@ -48,6 +66,9 @@ workflows/
 **Moving a workflow into its area folder is a manual step the user does themselves, unless they name the area folder when asking for the import** — then import straight into `workflows/<area>/`. Otherwise import new workflows into `workflows/<workflow-name>/` and, once the import session is finished, **remind the user to move them into the right area folder — they asked for this reminder and called it very important.** Don't move them yourself. Run `npm run build` again after the move, since the area folder is the group name on both pages.
 
 The companion `.md` covers: what the workflow does from start to finish, what triggers it, which credentials it uses, any "tricky" nodes and why they are tricky, and who uses it.
+
+- Describe behaviour from the JSON only. Anything inferred or not confirmed against a real execution is marked as such ("Not verified", "probably").
+- "Who uses it" is left as "To be filled in" when the workflow doesn't say; don't guess.
 
 ## Documentation site
 
@@ -66,6 +87,15 @@ site/
 Shared code is in [scripts/lib/workflows.mjs](scripts/lib/workflows.mjs): workflow discovery (`workflows/**/<name>/<name>.json`), the `AREA_TITLES` map and the cross-link routes. The area folder becomes the group name on both pages, in title case (`google-workspace` → "Google Workspace"); where that is wrong, add the display name to `AREA_TITLES` (the folder is `clev` but the pages show "CLEV").
 
 To preview: the user keeps the site served at http://localhost:3111 with `npm run serve` — use that, don't start another server. **If it is not running, remind the user to start it with `npm run serve`** (check with `curl -s -o /dev/null -w '%{http_code}' http://localhost:3111/`). The script binds to 127.0.0.1 and serves only `site/`, on purpose: `serve` listens on every network interface by default, and serving the repo root would expose the gitignored `raw/` exports that still hold tokens and personal data.
+
+Checking a build:
+
+- Spec consistency — must print `true` (Python has no `yaml` module here, so use Ruby):
+  `ruby -ryaml -rjson -e 'y=YAML.load_file("site/api/openapi.yaml"); h=File.read("site/api/index.html"); puts y==JSON.parse(h[/content: (\{.*\}),\n/,1])'`
+- Look at both pages in Chrome after a template change; add `?v=N` to the URL, because the browser serves a cached page otherwise.
+- Scalar deep links are `#tag/<area-title-slug>/<METHOD>/<path>`; workflow links are `#/<area>/<slug>`.
+- Scalar option names: check https://raw.githubusercontent.com/scalar/scalar/main/documentation/configuration.md before adding one; guessed names are ignored silently.
+- Client JS and CSS for the workflow page live in their own files under `scripts/lib/` so they need no escaping inside the build script's template string.
 
 ### Workflow documentation (`site/index.html`)
 
@@ -96,11 +126,14 @@ Webhook-triggered workflows are additionally documented as one API: a **single O
 - Group related files together and give each commit a descriptive message.
 - **Each workflow gets its own commit**: its `.json` and companion `.md` go together, and changes to two workflows are never mixed in one commit.
 - Repo-wide files (`CLAUDE.md`, `.gitignore`, `package.json`, `scripts/`, the generated `site/`) are committed separately from workflow folders. Rebuild before committing a workflow change so the generated docs never lag behind.
+- Commit only when the user says so; finish the work, report, and wait for "commit".
+- macOS treats `CLEV` and `clev` as the same folder: rename case through a temporary name with `git mv`, one workflow at a time, and don't `git reset` in between or the rename is lost.
+- End each commit message with `Co-Authored-By:` as given by the session.
 - Don't push: no remote has been set up.
 
 ## Current state
 
-The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A third batch of ten (the HighLevel workflows, a third n8n login) went into `workflows/highlevel/`. A second batch of seven (the CLEV reporting workflows, from a different n8n login on the same instance) was imported the same day into `workflows/clev/`. The generated site in `site/` covers all 24 workflows and every webhook endpoint. The user is initialising git locally; there is no remote yet, so don't expect push/PR workflows.
+The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, a second n8n login) went into `workflows/clev/` and a third batch of ten (the HighLevel workflows, a third login) into `workflows/highlevel/`, all on 2026-10-03. The generated site in `site/` covers all 24 workflows and every webhook endpoint. Git is local only, on `main`; there is no remote yet, so don't expect push/PR workflows.
 
 [n8n-workflow-sample.json](n8n-workflow-sample.json) at the root is **a reference sample, not a tracked workflow**: it is gitignored (its pinned request carries a real `Authorization` header), deliberately left with its `pinData` intact and needs no folder, kebab-case rename, or companion `.md`. Use it to see the shape of a real export. The import rules above apply to actual workflows brought in, not to this file.
 
