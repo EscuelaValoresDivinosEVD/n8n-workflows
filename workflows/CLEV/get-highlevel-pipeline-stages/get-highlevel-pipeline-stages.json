@@ -1,0 +1,176 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "pipelines",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -48
+      ],
+      "id": "00b4ec06-64da-4b79-af68-8cf13a7c9ad5",
+      "name": "split pipelines1"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/pipelines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "9rrylZQK1sEASL2L0o3x"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100,
+              "batchInterval": 10000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        256,
+        -48
+      ],
+      "id": "53484828-c8db-4776-b116-220843427cb9",
+      "name": "Get Pipelines1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "stages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -48
+      ],
+      "id": "21edc61b-c9d9-4053-a298-e5b52d0a0bc9",
+      "name": "split Stages"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "782a90c0-8e6f-47a7-bcdb-4d5f2f45fbe0",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "266c48b0-8530-4b8f-a1c6-c07c2c356d9c",
+              "name": "position",
+              "value": "={{ $json.position }}",
+              "type": "string"
+            },
+            {
+              "id": "6f252420-9249-4480-bbb4-ea9faae04ee6",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        -48
+      ],
+      "id": "6f085615-1e52-4a50-9b34-27a9ddd4968d",
+      "name": "Return"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "67a6941c-8a79-445a-9701-0223908cda27",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        32,
+        -48
+      ]
+    }
+  ],
+  "connections": {
+    "split pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split Stages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pipelines1": {
+      "main": [
+        [
+          {
+            "node": "split pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split Stages": {
+      "main": [
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Pipelines1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
