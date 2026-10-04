@@ -2,7 +2,7 @@
   "nodes": [
     {
       "parameters": {
-        "url": "https://services.leadconnectorhq.com/locations/9rrylZQK1sEASL2L0o3x/customValues",
+        "url": "https://services.leadconnectorhq.com/locations/REDACTED/customValues",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
