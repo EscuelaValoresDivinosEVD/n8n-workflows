@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "694daab8-7fcb-487e-b550-e93ffbdda182",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8e2fa85c-648f-4817-bcd9-8ac49683d19f",
+      "name": "Webhook",
+      "webhookId": "694daab8-7fcb-487e-b550-e93ffbdda182",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "psZv93SrO3IkUx5T",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "connections": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8bd43ab6b8f8a9d7f5b0202e05d6096cf67ee8530b15f423c69d6b5fd79c7b"
+  }
+}
