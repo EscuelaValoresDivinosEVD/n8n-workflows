@@ -64,6 +64,6 @@ If you don't have these logins, ask Eduardo Rudas, Rebecca Rondon or Cesar Valde
 - **Nothing secret goes into the repo.** Tokens are replaced with a placeholder, personal data in notes is redacted, and HighLevel location IDs are removed. The untouched exports stay in `raw/`, which git ignores; never commit that folder.
 - **`site/` is generated.** Change a workflow's `.json` or `.md`, then run `npm run build`.
 - **The documentation describes what is published in n8n,** not unpublished drafts. A workflow with an unpublished draft is marked as such.
-- **Do not push.** No remote repository has been set up yet.
+- **Push only on purpose.** The repo has a GitHub remote (`origin`, `EscuelaValoresDivinosEVD/n8n-workflows`). Claude commits when you tell it to and pushes only when you ask.
 
 `CLAUDE.md` has the full detail behind each of these.

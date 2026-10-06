@@ -134,11 +134,11 @@ Webhook-triggered workflows are additionally documented as one API: a **single O
 - Commit only when the user says so; finish the work, report, and wait for "commit".
 - macOS treats `CLEV` and `clev` as the same folder: rename case through a temporary name with `git mv`, one workflow at a time, and don't `git reset` in between or the rename is lost.
 - End each commit message with `Co-Authored-By:` as given by the session.
-- Don't push: no remote has been set up.
+- The remote is `origin` (`EscuelaValoresDivinosEVD/n8n-workflows` on GitHub), with `main` tracking `origin/main`. Push only when the user says so, and run the secret check above first: a pushed commit is out of the machine for good.
 
 ## Current state
 
-The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, a second n8n login) went into `workflows/clev/` and a third batch of ten (the HighLevel workflows, a third login) into `workflows/highlevel/`, all on 2026-10-03. The generated site in `site/` covers all 24 workflows and every webhook endpoint. Git is local only, on `main`; there is no remote yet, so don't expect push/PR workflows.
+The seven published workflows were imported on 2026-10-03 and now live in `workflows/google-workspace/`, each with a first-draft companion `.md` (the `.md` format is still being decided; keep new ones consistent with the existing ones). A second batch of seven (the CLEV reporting workflows, a second n8n login) went into `workflows/clev/` and a third batch of ten (the HighLevel workflows, a third login) into `workflows/highlevel/`, all on 2026-10-03. The generated site in `site/` covers all 24 workflows and every webhook endpoint. Git is on `main`, with a GitHub remote (`origin`, `EscuelaValoresDivinosEVD/n8n-workflows`) added on 2026-10-06; work is committed straight to `main`, with no PR workflow so far.
 
 [n8n-workflow-sample.json](n8n-workflow-sample.json) at the root is **a reference sample, not a tracked workflow**: it is gitignored (its pinned request carries a real `Authorization` header), deliberately left with its `pinData` intact and needs no folder, kebab-case rename, or companion `.md`. Use it to see the shape of a real export. The import rules above apply to actual workflows brought in, not to this file.
 
